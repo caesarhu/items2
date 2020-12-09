@@ -3,6 +3,6 @@
             [jsonista.core :as json]))
 
 (>defn parse-json
-  [s]
-  [string? => map?]
-  (json/read-value s (json/object-mapper {:decode-key-fn true})))
+  [in]
+  [any? => map?]
+  (json/read-value in (json/object-mapper {:decode-key-fn true})))
