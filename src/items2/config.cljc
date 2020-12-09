@@ -1,6 +1,7 @@
 (ns items2.config
   (:require [aero.core :as aero]
             [clojure.java.io :as io]
+            [juxt.clip.repl :refer [system]]
             [migratus.core :as migratus]
             [taoensso.timbre :as timbre]
             [taoensso.timbre.appenders.3rd-party.rolling :as rolling]))
@@ -45,3 +46,21 @@
   [m]
   (timbre/set-config! timbre/default-config)
   (timbre/merge-config! m))
+
+;;; 系統參數
+
+(defn meta-db
+  []
+  (:meta-db system))
+
+(defn meta-dict
+  []
+  (:meta-dict system))
+
+(defn json-dict
+  []
+  (:json-dict system))
+
+(defn bug-unit-dict
+  []
+  (:bug-unit-dict system))

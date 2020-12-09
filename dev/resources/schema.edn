@@ -22,31 +22,31 @@
     :translate/chinese "查獲時間"} check-time
   ^{:type String
     :optional true
-    :translate/chinese "飛機班次"} flight
+    :translate/chinese "班次"} flight
   ^{:type String
     :translate/chinese "單位"} unit
   ^{:type String
     :optional true
     :translate/chinese "子單位"} subunit
   ^{:type String
-    :translate/chinese "查獲員警"} police
+    :translate/chinese "員警姓名"} police
   ^{:type String
-    :translate/chinese "處理方式"} process
-  ^{:type String
-    :optional true
-    :translate/chinese "查獲人簽名"} check-sign
+    :translate/chinese "處理情形"} process
   ^{:type String
     :optional true
-    :translate/chinese "旅客簽名"} passenger-sign
+    :translate/chinese "查獲人簽章"} check-sign
   ^{:type String
     :optional true
-    :translate/chinese "貨運業者簽名"} trader-sign
+    :translate/chinese "旅客簽章"} passenger-sign
+  ^{:type String
+    :optional true
+    :translate/chinese "航空貨運業者簽章"} trader-sign
   ^{:type String
     :optional true
     :translate/chinese "輸入設備IP"} ip
   ^{:type String
     :optional true
-    :translate/chinese "備註"} memo
+    :translate/chinese "所有備註"} memo
   ^{:type String
     :optional true
     :translate/chinese "旅客證號"} passenger-id
@@ -86,8 +86,10 @@
   ^{:type String
     :translate/chinese "種類"} kind
   ^{:type String
+    :optional true
     :translate/chinese "類別"} subkind
   ^{:type String
+    :optional true
     :translate/chinese "物品"} object]
 
  ^{:translate/chinese "項目人數檔"}
@@ -107,6 +109,7 @@
   ^{:type Integer
     :translate/chinese "件數"} piece
   ^{:type Integer
+    :optional true
     :translate/chinese "人數"} people]
 
  ^{:translate/chinese "單位檔"}

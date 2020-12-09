@@ -29,7 +29,7 @@
    [:id clojure.core/pos-int?]
    [:items-id clojure.core/pos-int?]
    [:kind clojure.core/string?]
-   [:people clojure.core/integer?]
+   [:people {:optional true} [:maybe clojure.core/integer?]]
    [:piece clojure.core/integer?]])
 
 
@@ -38,8 +38,8 @@
    [:id clojure.core/pos-int?]
    [:items-id clojure.core/pos-int?]
    [:kind clojure.core/string?]
-   [:object clojure.core/string?]
-   [:subkind clojure.core/string?]])
+   [:object {:optional true} [:maybe clojure.core/string?]]
+   [:subkind {:optional true} [:maybe clojure.core/string?]]])
 
 
 (def malli-units

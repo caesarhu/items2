@@ -20,6 +20,7 @@
                  [metosin/malli "0.2.1"]
                  [metosin/jsonista "0.2.7"]
                  [clojure.java-time "0.3.2"]
+                 [com.rpl/specter "1.1.3"]
                  [exoscale/ex "0.3.16"]]
   :main ^:skip-aot items2.core
   :target-path "target/%s"

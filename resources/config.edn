@@ -14,6 +14,9 @@
  :json-transform {:旅客護照號碼/身分證號 :旅客證號
                   :IpAddress :輸入設備IP}
 
+ :bug-unit {"臺中局" "臺中所"
+            "花蓮局" "花蓮所"}
+
  :appender-opts
  #profile {:dev {:path "logs/dev.log"
                  :pattern :daily}
@@ -29,6 +32,9 @@
 
   :json-dict
   {:start [#ref [:json-transform] {}]}
+
+  :bug-unit-dict
+  {:start [#ref [:bug-unit] {}]}
 
   :timbre
   {:start (items2.config/set-timbre-config!
