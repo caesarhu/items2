@@ -14,13 +14,15 @@
  :json-transform {:旅客護照號碼/身分證號 :旅客證號
                   :IpAddress :輸入設備IP}
 
- :timbre-config
- #profile {:dev {:appender-opts {:fname "logs/dev.log"}}
-           :default {:appender-opts {:path "logs/items2.log"
-                                     :pattern :daily}}
-           :prod {:timestamp-opts #ref [:timbre-time-opts]
-                  :appenders {:spit (taoensso.timbre.appenders.3rd-party.rolling/rolling-appender {:path "logs/items2.log"
-                                                                                                   :pattern :daily})}}}
+ :appender-opts
+ #profile {:dev {:path "logs/dev.log"
+                 :pattern :daily
+                 :enabled? true
+                 :min-level :debug}
+           :default {:path "logs/items2.log"
+                     :pattern :daily
+                     :enabled? true
+                     :min-level :debug}}
 
  :components
  {:meta-db
@@ -30,12 +32,13 @@
   {:start (hodur-translate.core/dict-bimap (clip/ref :meta-db))}
 
   :json-dict
-  {:start [#ref [:json-transform] (clojure.set/map-invert #ref [:json-transform])]}
+  {:start [#ref [:json-transform] {}]}
 
   :timbre
-  {:start (taoensso.timbre/merge-config!
+  {:start (items2.config/set-timbre-config!
             {:timestamp-opts {:timezone (items2.config/taipei-zone)}
-             :appenders {:println {:min-level :report}}})}
+             :appenders {:println {:min-level :info}
+                         :rolling (items2.config/rolling-appender #ref [:appender-opts])}})}
 
   :db
   {:pre-start

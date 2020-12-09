@@ -2,6 +2,7 @@
   (:require [aero.core :as aero]
             [clojure.java.io :as io]
             [migratus.core :as migratus]
+            [taoensso.timbre :as timbre]
             [taoensso.timbre.appenders.3rd-party.rolling :as rolling]))
 
 (defn config
@@ -39,3 +40,8 @@
 (defn rolling-appender
   [opts]
   (rolling/rolling-appender opts))
+
+(defn set-timbre-config!
+  [m]
+  (timbre/set-config! timbre/default-config)
+  (timbre/merge-config! m))
