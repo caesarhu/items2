@@ -1,0 +1,46 @@
+{:jdbc-url "jdbc:postgresql://localhost:35432/items2?user=shun&password=smilehu"
+ :connection-uri #profile {:default #env JDBC_DATABASE_URL
+                           :dev #or [#env JDBC_DATABASE_URL
+                                     #ref [:jdbc-url]]}
+ :schema-path "schema.edn"
+ :migration-dir "migrations"
+
+ :migratus {:store :database
+            :migration-dir #ref [:migration-dir]
+            :db {:connection-uri #ref [:connection-uri]}}
+
+ :hikari-cp {:jdbc-url #ref [:connection-uri]}
+
+ :json-transform {:旅客護照號碼/身分證號 :旅客證號
+                  :IpAddress :輸入設備IP}
+
+ :timbre-config
+ #profile {:dev {:appender-opts {:fname "logs/dev.log"}}
+           :default {:appender-opts {:path "logs/items2.log"
+                                     :pattern :daily}}
+           :prod {:timestamp-opts #ref [:timbre-time-opts]
+                  :appenders {:spit (taoensso.timbre.appenders.3rd-party.rolling/rolling-appender {:path "logs/items2.log"
+                                                                                                   :pattern :daily})}}}
+
+ :components
+ {:meta-db
+  {:start (hodur-translate.core/init-db (hodur-translate.core/read-schema #ref [:schema-path]))}
+
+  :meta-dict
+  {:start (hodur-translate.core/dict-bimap (clip/ref :meta-db))}
+
+  :json-dict
+  {:start [#ref [:json-transform] (clojure.set/map-invert #ref [:json-transform])]}
+
+  :timbre
+  {:start (taoensso.timbre/merge-config!
+            {:timestamp-opts {:timezone (items2.config/taipei-zone)}})}
+
+  :db
+  {:pre-start
+   (migratus.core/migrate #ref [:migratus])
+   :start
+   ;(next.jdbc/get-datasource #ref [:connection-uri])
+   (hikari-cp.core/make-datasource #ref [:hikari-cp])
+   :stop
+   (hikari-cp.core/close-datasource this)}}}

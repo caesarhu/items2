@@ -1,0 +1,19 @@
+CREATE TABLE items (
+  carry text NOT NULL,
+  check_line text,
+  check_sign text,
+  check_time timestamp NOT NULL,
+  file text NOT NULL UNIQUE,
+  file_time timestamp NOT NULL,
+  flight text,
+  id bigint NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  ip text,
+  memo text,
+  passenger_id text,
+  passenger_sign text,
+  police text NOT NULL,
+  process text NOT NULL,
+  subunit text,
+  trader_sign text,
+  unit text NOT NULL
+);
