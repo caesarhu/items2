@@ -16,13 +16,9 @@
 
  :appender-opts
  #profile {:dev {:path "logs/dev.log"
-                 :pattern :daily
-                 :enabled? true
-                 :min-level :debug}
+                 :pattern :daily}
            :default {:path "logs/items2.log"
-                     :pattern :daily
-                     :enabled? true
-                     :min-level :debug}}
+                     :pattern :daily}}
 
  :components
  {:meta-db
@@ -36,7 +32,8 @@
 
   :timbre
   {:start (items2.config/set-timbre-config!
-            {:timestamp-opts {:timezone (items2.config/taipei-zone)}
+            {:min-level :info
+             :timestamp-opts {:timezone (items2.config/taipei-zone)}
              :appenders {:println {:min-level :info}
                          :rolling (items2.config/rolling-appender #ref [:appender-opts])}})}
 
