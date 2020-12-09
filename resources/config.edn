@@ -34,7 +34,8 @@
 
   :timbre
   {:start (taoensso.timbre/merge-config!
-            {:timestamp-opts {:timezone (items2.config/taipei-zone)}})}
+            {:timestamp-opts {:timezone (items2.config/taipei-zone)}
+             :appenders {:println {:min-level :report}}})}
 
   :db
   {:pre-start
