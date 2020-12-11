@@ -1,10 +1,11 @@
 (ns items2.items-malli
-  (:require [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]))
+  (:require [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]
+            [items2.json :as j]))
 
 (def malli-json
   [:map
    [:所有項目數量
-    [:map-of :keyword :string]]
+    [:map-of :string int?]]
    [:所有備註 {:optional true} [:maybe :string]]
    [:IpAddress {:optional true} [:maybe :string]]
    [:日期 :string]
@@ -16,7 +17,7 @@
    [:旅客簽章 {:optional true} [:maybe :string]]
    [:查獲位置 {:optional true} [:maybe :string]]
    [:查獲人簽章 :string]
-   [:勤務單位 :string]
+   [:勤務單位 [string? {:decode/string #(str "test-" %)}]]
    [:處理情形 :string]
    [:員警姓名 :string]
    [:時間 :string]

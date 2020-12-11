@@ -8,7 +8,7 @@
                         ["snapshots" :clojars
                          :creds :gpg]]
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [juxt/clip "0.20.0"]
+                 [juxt/clip "0.21.0"]
                  [aero/aero "1.1.6"]
                  [caesarhu/aave "0.1.0"]
                  [caesarhu/hodur-translate "0.1.16"]
@@ -21,7 +21,9 @@
                  [metosin/jsonista "0.2.7"]
                  [clojure.java-time "0.3.2"]
                  [com.rpl/specter "1.1.3"]
-                 [exoscale/ex "0.3.16"]]
+                 [exoscale/ex "0.3.16"]
+                 [funcool/datoteka "1.2.0"]
+                 [borkdude/sci "0.1.1-alpha.10"]]
   :main ^:skip-aot items2.core
   :target-path "target/%s"
   :resource-paths ["resources" "target/resources"]
@@ -41,4 +43,5 @@
                                    [org.clojure/test.check "1.1.0"]
                                    [com.gfredericks/test.chuck "0.2.10"]
                                    [lambdaisland/kaocha "1.0.732"]
-                                   [migratus "1.3.3"]]}})
+                                   [migratus "1.3.3"]
+                                   [nrepl/nrepl "0.8.3"]]}})
