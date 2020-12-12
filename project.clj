@@ -7,7 +7,7 @@
                          :creds :gpg]
                         ["snapshots" :clojars
                          :creds :gpg]]
-  :dependencies [[org.clojure/clojure "1.10.1"]
+  :dependencies [[org.clojure/clojure "1.10.2-rc1"]
                  [juxt/clip "0.21.0"]
                  [aero/aero "1.1.6"]
                  [caesarhu/aave "0.1.0"]

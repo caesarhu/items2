@@ -54,13 +54,13 @@
     :optional true
     :translate/chinese "查獲位置"} check-line]
 
- ^{:translate/chinese "紀錄清單檔"}
+ ^{:translate/chinese "所有項目檔"}
  all-list
  [^{:type Integer
     :postgres.column/identity-always true
     :postgres.column/primary-key true
     :spec/override clojure.core/pos-int?
-    :translate/chinese "紀錄清單檔id"} id
+    :translate/chinese "所有項目檔id"} id
   ^{:type items
     :spec/override clojure.core/pos-int?
     :postgres.column/on-update :cascade

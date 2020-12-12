@@ -12,7 +12,7 @@
  :hikari-cp {:jdbc-url #ref [:connection-uri]}
 
  :json-transform {:旅客護照號碼/身分證號 :旅客證號
-                  :IpAddress :輸入設備IP}
+                  :IpAddress :輸入設備-ip}
 
  :bug-unit {"臺中局" "臺中所"
             "花蓮局" "花蓮所"}
