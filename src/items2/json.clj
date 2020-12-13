@@ -10,7 +10,9 @@
             [datoteka.core :as fs]
             [jsonista.core :as json]
             [items2.transform :as t]
-            [items2.config :as config]))
+            [items2.config :as config]
+            [malli.util :as mu]
+            [items2.items-malli :as im]))
 
 (>defn ->int
   [s]
@@ -63,6 +65,12 @@
    ["查獲位置" {:optional true} [:maybe string?]]
    ["時間" string?]
    ["旅客護照號碼/身分證號" {:optional true} [:maybe string?]]])
+
+(def qualified-json
+  (utils/qualify-keys (->> (mu/select-keys im/malli-items [:id])
+                           mu/optional-keys
+                           (mu/merge im/malli-items))
+                      :items))
 
 (>defn item-parser
   [m]
