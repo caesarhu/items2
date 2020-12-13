@@ -60,25 +60,33 @@
 
 (def item-json
   [:map
-   ["項目清單"
+   [:項目清單
     [:vector [string? {:transfer parse-itemlist}]]]
-   ["項目人數" [:vector [string? {:transfer parse-people}]]]
-   ["所有項目數量" {:transfer parse-all-list}
+   [:項目人數 [:vector [string? {:transfer parse-people}]]]
+   [:所有項目數量 {:transfer parse-all-list}
     [:map-of string? string?]]
-   ["日期" string?]
-   ["員警姓名" [string? {:transfer utils/trim-space}]]
-   ["處理情形" string?]
-   ["攜帶方式" string?]
-   ["班次" string?]
-   ["航空貨運業者簽章" {:optional true} [:maybe string?]]
-   ["IpAddress" {:optional true} [:maybe string?]]
-   ["所有備註" {:optional true} [:maybe string?]]
-   ["旅客簽章" {:optional true} [:maybe string?]]
-   ["查獲人簽章" {:optional true} [:maybe string?]]
-   ["勤務單位" [string? {:transfer parse-unit}]]
-   ["查獲位置" {:optional true} [:maybe string?]]
-   ["時間" string?]
-   ["旅客護照號碼/身分證號" {:optional true} [:maybe string?]]])
+   [:日期 string?]
+   [:員警姓名 [string? {:transfer utils/trim-space}]]
+   [:處理情形 string?]
+   [:攜帶方式 string?]
+   [:班次 string?]
+   [:航空貨運業者簽章 {:optional true} [:maybe string?]]
+   [:IpAddress {:optional true} [:maybe string?]]
+   [:所有備註 {:optional true} [:maybe string?]]
+   [:旅客簽章 {:optional true} [:maybe string?]]
+   [:查獲人簽章 {:optional true} [:maybe string?]]
+   [:勤務單位 [string? {:transfer parse-unit}]]
+   [:查獲位置 {:optional true} [:maybe string?]]
+   [:時間 string?]
+   [:旅客護照號碼/身分證號 {:optional true} [:maybe string?]]])
+
+(def raw-json-transformer
+  (mt/key-transformer {:decode #(utils/json-translate (keyword %))}))
+
+(def json-transformer
+  (mt/transformer
+    raw-json-transformer
+    t/custom-transformer))
 
 (def qualified-json
   (utils/qualify-malli (->> (mu/select-keys im/malli-items [:id])
@@ -88,11 +96,10 @@
 
 (>defn json-parser
   [file-name]
-  [string? => any?]
+  [string? => map?]
   (ex/try+
     (let [file (fs/file file-name)
-          json (->> (m/decode item-json (json/read-value file) t/custom-transformer)
-                    (medley/map-keys #(utils/json-translate (keyword %))))
+          json (m/decode item-json (json/read-value file) json-transformer)
           {:keys [日期 時間 勤務單位]} json
           datetime (jt/local-date-time (string/join "T" [日期 時間]))
           ftime (utils/file-time file)]

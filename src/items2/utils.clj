@@ -20,16 +20,17 @@
 
 (>defn mata-translate
   [k]
-  [:keyword => :keyword]
+  [[:or :keyword :string :symbol] => :keyword]
   (hodur/dict-translate (config/meta-dict) k))
 
-(defn json-translate
+(>defn json-translate
   [k]
+  [[:or :keyword :string :symbol] => :keyword]
   (hodur/dict-translate (config/json-dict) k))
 
 (>defn bug-unit-translate
   [k]
-  [any? => any?]
+  [[:or :keyword :string :symbol] => :keyword]
   (hodur/dict-translate (config/bug-unit-dict) k))
 
 (>defn translate-map
