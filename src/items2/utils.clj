@@ -50,13 +50,13 @@
   [map? => map?]
   (medley/map-keys #(keyword (name %)) m))
 
-(defn qualify-keys
+(defn qualify-malli
   "Makes map keys qualified."
   ([?schema namespace]
-   (qualify-keys ?schema namespace nil nil))
+   (qualify-malli ?schema namespace nil nil))
   ([?schema namespace ?keys]
    (let [[keys options] (if (map? ?keys) [nil ?keys] [?keys nil])]
-     (qualify-keys ?schema namespace keys options)))
+     (qualify-malli ?schema namespace keys options)))
   ([?schema namespace keys options]
    (let [accept (if keys (set keys) (constantly true))
          qualify (fn [x]
@@ -64,13 +64,13 @@
          mapper (fn [[k :as e]] (if (accept k) (c/update e 0 qualify) e))]
      (mu/transform-entries ?schema #(map mapper %) options))))
 
-(defn unqualify-keys
+(defn unqualify-malli
   "Makes map keys qualified."
   ([?schema]
-   (unqualify-keys ?schema nil nil))
+   (unqualify-malli ?schema nil nil))
   ([?schema ?keys]
    (let [[keys options] (if (map? ?keys) [nil ?keys] [?keys nil])]
-     (unqualify-keys ?schema keys options)))
+     (unqualify-malli ?schema keys options)))
   ([?schema keys options]
    (let [accept (if keys (set keys) (constantly true))
          qualify (fn [x]
@@ -84,3 +84,18 @@
       jt/instant
       jt/fixed-clock
       jt/local-date-time))
+
+
+(defn partial-right
+  "Takes a function f and fewer than the normal arguments to f, and
+ returns a fn that takes a variable number of additional args. When
+ called, the returned function calls f with additional args + args."
+  ([f] f)
+  ([f arg1]
+   (fn [& args] (apply f (concat args [arg1]))))
+  ([f arg1 arg2]
+   (fn [& args] (apply f (concat args [arg1 arg2]))))
+  ([f arg1 arg2 arg3]
+   (fn [& args] (apply f (concat args [arg1 arg2 arg3]))))
+  ([f arg1 arg2 arg3 & more]
+   (fn [& args] (apply f (concat args (concat [arg1 arg2 arg3] more))))))

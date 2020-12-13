@@ -12,6 +12,7 @@
             [items2.transform :as t]
             [items2.config :as config]
             [malli.util :as mu]
+            [malli.transform :as mt]
             [items2.items-malli :as im]))
 
 (>defn ->int
@@ -31,8 +32,8 @@
   [s]
   [string? => map?]
   (let [[kind sub_kind item] (string/split s #"-")
-        result {:種類 kind :類別 sub_kind :物品 item}]
-    result))
+        result {:項目清單檔/種類 kind :項目清單檔/類別 sub_kind :項目清單檔/物品 item}]
+    (utils/translate-map result (config/meta-dict))))
 
 (>defn parse-people
   [s]
@@ -42,15 +43,32 @@
                          ->int)
         piece-count (-> (re-find #"\d+" piece)
                         ->int)
-        result {:種類 kind :件數 piece-count :人數 people-count}]
-    result))
+        result {:項目人數檔/種類 kind :項目人數檔/件數 piece-count :項目人數檔/人數 people-count}]
+    (utils/translate-map result (config/meta-dict))))
+
+(>defn parse-all-list
+  [m]
+  [map? => seq?]
+  (map (fn [entry]
+         (let [k (key entry)
+               v (val entry)
+               result {:所有項目檔/項目 k
+                       :所有項目檔/數量 (->int v)}]
+           (utils/translate-map result (config/meta-dict))))
+       m))
+
+(def item-transformer
+  (mt/transformer
+    t/custom-transformer
+    (mt/key-transformer {:decode keyword})))
 
 (def item-json
   [:map
-   ["項目清單" [:vector [string? {:transfer parse-itemlist}]]]
+   ["項目清單"
+    [:vector [string? {:transfer parse-itemlist}]]]
    ["項目人數" [:vector [string? {:transfer parse-people}]]]
-   ["所有項目數量"
-    [:map-of :string [string? {:transfer ->int}]]]
+   ["所有項目數量" {:transfer parse-all-list}
+    [:map-of string? string?]]
    ["日期" string?]
    ["員警姓名" [string? {:transfer utils/trim-space}]]
    ["處理情形" string?]
@@ -67,34 +85,21 @@
    ["旅客護照號碼/身分證號" {:optional true} [:maybe string?]]])
 
 (def qualified-json
-  (utils/qualify-keys (->> (mu/select-keys im/malli-items [:id])
-                           mu/optional-keys
-                           (mu/merge im/malli-items))
-                      :items))
+  (utils/qualify-malli (->> (mu/select-keys im/malli-items [:id])
+                            mu/optional-keys
+                            (mu/merge im/malli-items))
+                       :items))
 
 (>defn item-parser
   [m]
   [map? => any?]
   (let [mk (medley/map-keys keyword m)
-        {:keys [日期 時間 所有項目數量 勤務單位 項目清單 項目人數]} mk
-        all-v (map (fn [entry]
-                     (let [k (key entry)
-                           v (val entry)]
-                       {:項目 k
-                        :數量 v}))
-                   所有項目數量)
-        item-list (->> (map #(utils/qualify-map % :項目清單檔) 項目清單)
-                       (map #(utils/translate-map % (config/meta-dict))))
-        item-people (->> (map #(utils/qualify-map % :項目人數檔) 項目人數)
-                         (map #(utils/translate-map % (config/meta-dict))))
-        all-list (->> (map #(utils/qualify-map % :所有項目檔) all-v)
-                      (map #(utils/translate-map % (config/meta-dict))))
+        {:keys [日期 時間 勤務單位]} mk
         datetime (jt/local-date-time (string/join "T" [日期 時間]))
         result (-> mk
-                   (assoc :all-list all-list :查獲時間 datetime)
+                   (assoc :查獲時間 datetime)
                    (merge 勤務單位))]
-    (-> (utils/translate-map result (config/json-dict))
-        (assoc :item-list item-list :item-people item-people))))
+    (utils/translate-map result (config/json-dict))))
 
 (>defn json-parser
   [file-name]
