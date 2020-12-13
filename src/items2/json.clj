@@ -49,7 +49,7 @@
 
 (>defn parse-all-list
   [m]
-  [map? => seq?]
+  [map? => vector?]
   (map (fn [entry]
          (let [k (key entry)
                v (val entry)
