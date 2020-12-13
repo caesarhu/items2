@@ -30,7 +30,7 @@
 
 (>defn bug-unit-translate
   [k]
-  [[:or :keyword :string :symbol] => :keyword]
+  [[:or :keyword :string :symbol] => :string]
   (hodur/dict-translate (config/bug-unit-dict) k))
 
 (>defn translate-map

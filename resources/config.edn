@@ -19,8 +19,10 @@
 
  :appender-opts
  #profile {:dev {:path "logs/dev.log"
+                 :max-size 60
                  :pattern :daily}
            :default {:path "logs/items2.log"
+                     :max-size 60
                      :pattern :daily}}
 
  :components
@@ -41,7 +43,8 @@
             {:min-level :info
              :timestamp-opts {:timezone (items2.config/taipei-zone)}
              :appenders {:println {:min-level :info}
-                         :rolling (items2.config/rolling-appender #ref [:appender-opts])}})}
+                         ;:rolling (items2.config/rolling-appender #ref [:appender-opts])
+                         :rotor (items2.config/rotor-appender #ref [:appender-opts])}})}
 
   :db
   {:pre-start

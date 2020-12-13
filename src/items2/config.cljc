@@ -4,7 +4,9 @@
             [juxt.clip.repl :refer [system]]
             [migratus.core :as migratus]
             [taoensso.timbre :as timbre]
-            [taoensso.timbre.appenders.3rd-party.rolling :as rolling]))
+            [taoensso.timbre.appenders.3rd-party.rolling :as rolling]
+            [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
+            [redelay.core :as redelay]))
 
 (defn config
   ([profile]
@@ -41,6 +43,10 @@
 (defn rolling-appender
   [opts]
   (rolling/rolling-appender opts))
+
+(defn rotor-appender
+  [opts]
+  (rotor/rotor-appender opts))
 
 (defn set-timbre-config!
   [m]

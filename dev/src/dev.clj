@@ -21,7 +21,8 @@
             [items2.transform :as t]
             [datoteka.core :as fs]
             [malli.util :as mu]
-            [malli.error :as me]))
+            [malli.error :as me]
+            [kaocha.repl :as k]))
 
 (set-init! (fn [] (config/config :dev)))
 
