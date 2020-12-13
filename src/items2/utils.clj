@@ -5,15 +5,13 @@
             [com.rpl.specter :as sp]
             [hodur-translate.core :as hodur]
             [medley.core :as medley]
-            [jsonista.core :as json]
             [java-time :as jt]
             [malli.util :as mu]
             [clojure.string :as string]))
 
-(>defn parse-json
-  [in]
-  [any? => map?]
-  (json/read-value in (json/object-mapper {:decode-key-fn true})))
+(defn ex-cause-and-msg
+  [throwable]
+  (str "cause: " (medley/ex-cause throwable) "; " "message: " (medley/ex-message throwable)))
 
 (>defn trim-space
   [s]
@@ -25,9 +23,8 @@
   [:keyword => :keyword]
   (hodur/dict-translate (config/meta-dict) k))
 
-(>defn json-translate
+(defn json-translate
   [k]
-  [:keyword => :keyword]
   (hodur/dict-translate (config/json-dict) k))
 
 (>defn bug-unit-translate

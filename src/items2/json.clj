@@ -13,7 +13,8 @@
             [items2.config :as config]
             [malli.util :as mu]
             [malli.transform :as mt]
-            [items2.items-malli :as im]))
+            [items2.items-malli :as im]
+            [taoensso.timbre :as timbre]))
 
 (>defn ->int
   [s]
@@ -57,11 +58,6 @@
            (utils/translate-map result (config/meta-dict))))
        m))
 
-(def item-transformer
-  (mt/transformer
-    t/custom-transformer
-    (mt/key-transformer {:decode keyword})))
-
 (def item-json
   [:map
    ["項目清單"
@@ -90,25 +86,23 @@
                             (mu/merge im/malli-items))
                        :items))
 
-(>defn item-parser
-  [m]
-  [map? => any?]
-  (let [mk (medley/map-keys keyword m)
-        {:keys [日期 時間 勤務單位]} mk
-        datetime (jt/local-date-time (string/join "T" [日期 時間]))
-        result (-> mk
-                   (assoc :查獲時間 datetime)
-                   (merge 勤務單位))]
-    (utils/translate-map result (config/json-dict))))
-
 (>defn json-parser
   [file-name]
-  [string? => map?]
-  (let [file (fs/file file-name)
-        json (json/read-value file)
-        ftime (utils/file-time file)]
-    (->> (m/decode item-json json t/custom-transformer)
-         item-parser
-         (merge {:原始檔案(.getName file) :原始檔案時間 ftime})
-         (medley/map-keys #(keyword "危安物品檔" (name %)))
-         (medley/map-keys utils/mata-translate))))
+  [string? => any?]
+  (ex/try+
+    (let [file (fs/file file-name)
+          json (->> (m/decode item-json (json/read-value file) t/custom-transformer)
+                    (medley/map-keys #(utils/json-translate (keyword %))))
+          {:keys [日期 時間 勤務單位]} json
+          datetime (jt/local-date-time (string/join "T" [日期 時間]))
+          ftime (utils/file-time file)]
+      (->> (merge json 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
+           (medley/map-keys #(keyword "危安物品檔" (name %)))
+           (medley/map-keys utils/mata-translate)))
+    (catch Throwable e
+      (timbre/log :error ::json-parser (utils/ex-cause-and-msg e))
+      (throw (ex/ex-info (utils/ex-cause-and-msg e)
+                         ::ex/not-found
+                         {:from ::json-parser}
+                         e)))))
+
