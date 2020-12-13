@@ -34,7 +34,7 @@
   [string? => map?]
   (let [[kind sub_kind item] (string/split s #"-")
         result {:項目清單檔/種類 kind :項目清單檔/類別 sub_kind :項目清單檔/物品 item}]
-    (utils/translate-map result (config/meta-dict))))
+    (utils/translate-map result @config/meta-dict)))
 
 (>defn parse-people
   [s]
@@ -45,17 +45,17 @@
         piece-count (-> (re-find #"\d+" piece)
                         ->int)
         result {:項目人數檔/種類 kind :項目人數檔/件數 piece-count :項目人數檔/人數 people-count}]
-    (utils/translate-map result (config/meta-dict))))
+    (utils/translate-map result @config/meta-dict)))
 
 (>defn parse-all-list
   [m]
-  [map? => vector?]
+  [map? => seq?]
   (map (fn [entry]
          (let [k (key entry)
                v (val entry)
                result {:所有項目檔/項目 k
                        :所有項目檔/數量 (->int v)}]
-           (utils/translate-map result (config/meta-dict))))
+           (utils/translate-map result @config/meta-dict)))
        m))
 
 (def item-json

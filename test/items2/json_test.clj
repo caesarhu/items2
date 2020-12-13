@@ -4,9 +4,10 @@
             [items2.helpers :refer :all]
             [java-time :as jt]))
 
-(use-fixtures
-  :once
-  instrument-specs)
+(comment
+  (use-fixtures
+    :once
+    instrument-specs))
 
 (def json-file "dev/resources/data/2020-11-24-11-18-20.898-DataStore.json")
 

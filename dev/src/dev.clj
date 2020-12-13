@@ -22,9 +22,10 @@
             [datoteka.core :as fs]
             [malli.util :as mu]
             [malli.error :as me]
-            [kaocha.repl :as k]))
+            [kaocha.repl :as k]
+            [redelay.core :as redelay]))
 
-(set-init! (fn [] (config/config :dev)))
+(set-init! (fn [] (config/read-edn-config :dev)))
 
 (comment
   (start)
@@ -36,13 +37,13 @@
 
 (defn meta-db
   []
-  (-> (:schema-path (config/config))
+  (-> (:schema-path (config/read-edn-config))
       hodur/read-schema
       hodur/init-db))
 
 (defn spit-sql
   []
-  (-> (str "resources/" (:migration-dir (config/config)))
+  (-> (str "resources/" (:migration-dir (config/read-edn-config)))
       (hodur/spit-sql (meta-db))))
 
 (defn spit-malli

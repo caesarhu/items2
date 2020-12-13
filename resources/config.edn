@@ -26,19 +26,7 @@
                      :pattern :daily}}
 
  :components
- {:meta-db
-  {:start (hodur-translate.core/init-db (hodur-translate.core/read-schema #ref [:schema-path]))}
-
-  :meta-dict
-  {:start (hodur-translate.core/dict-bimap (clip/ref :meta-db))}
-
-  :json-dict
-  {:start [#ref [:json-transform] {}]}
-
-  :bug-unit-dict
-  {:start [#ref [:bug-unit] {}]}
-
-  :timbre
+ {:timbre
   {:start (items2.config/set-timbre-config!
             {:min-level :info
              :timestamp-opts {:timezone (items2.config/taipei-zone)}

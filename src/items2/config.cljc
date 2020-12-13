@@ -6,19 +6,24 @@
             [taoensso.timbre :as timbre]
             [taoensso.timbre.appenders.3rd-party.rolling :as rolling]
             [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
+            [hodur-translate.core :as hodur]
             [redelay.core :as redelay]))
 
-(defn config
+(defn read-edn-config
   ([profile]
    (aero/read-config (io/resource "config.edn") {:profile profile}))
   ([]
-   (config :dev)))
+   (read-edn-config :dev)))
+
+(def config
+  (redelay/state
+    :start (read-edn-config)))
 
 ;;; database migrations
 
 (defn migratus-config
   ([tag]
-   (:migratus (config tag)))
+   (:migratus (read-edn-config tag)))
   ([]
    (migratus-config :dev)))
 
@@ -55,18 +60,22 @@
 
 ;;; 系統參數
 
-(defn meta-db
-  []
-  (:meta-db system))
+;;; testing redelay
 
-(defn meta-dict
-  []
-  (:meta-dict system))
+(def meta-db
+  (redelay/state
+    :start (-> (:schema-path (read-edn-config))
+               hodur/read-schema
+               hodur/init-db)))
 
-(defn json-dict
-  []
-  (:json-dict system))
+(def meta-dict
+  (redelay/state
+    :start (hodur/dict-bimap @meta-db)))
 
-(defn bug-unit-dict
-  []
-  (:bug-unit-dict system))
+(def json-dict
+  (redelay/state
+    :start (vector (:json-transform @config) {})))
+
+(def bug-unit-dict
+  (redelay/state
+    :start [(:bug-unit @config) {}]))
