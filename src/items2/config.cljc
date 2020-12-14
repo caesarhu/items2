@@ -20,28 +20,10 @@
   (redelay/state
     :start (read-edn-config)))
 
-;;; database migrations
-
-(def migratus-config
-  (redelay/state (:migratus @config)))
-
-(defn migrate
-  []
-  (migratus/migrate @migratus-config))
-
-(defn rollback
-  []
-  (migratus/rollback @migratus-config))
-
-(defn reset-db
-  []
-  (migratus/reset @migratus-config))
-
 ;;; database datasource
 
 (def db
   (redelay/state :start
-                 (migrate)
                  (hikari/make-datasource (:hikari-cp @config))
 
                  :stop

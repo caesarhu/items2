@@ -5,3 +5,5 @@ CREATE TABLE item_list (
   object text,
   subkind text
 );
+--;;
+CREATE INDEX idx_item_list_by_items_id ON item_list (items_id);

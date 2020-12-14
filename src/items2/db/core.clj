@@ -1,5 +1,6 @@
 (ns items2.db.core
   (:require [items2.config :as config]
+            [aave.core :refer [>defn >defn-]]
             [redelay.core :as redelay]
             [clojure.spec.alpha :as s]
             [next.jdbc :as jdbc]
@@ -31,6 +32,11 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
   (s/or :db-spec ::spec/db-spec
         :next-jdbc-opts #(instance? next.jdbc.default_options.DefaultOptions %)))
 
+(def malli-db
+  [:fn #(s/valid? ::db-spec %)])
+(def malli-db-opts
+  [:fn #(s/valid? ::spec/opts-map %)])
+
 (def sys-db
   (redelay/state
     (let [db (jdbc/get-datasource @config/db)]
@@ -40,31 +46,39 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
   [f & args]
   (apply f @sys-db args))
 
-(defn honey!
+(>defn honey!
   ([db sql-map opts]
+   [malli-db map? malli-db-opts => any?]
    (jdbc/execute! db (sql/format sql-map) opts))
   ([sql-map opts]
+   [map? malli-db-opts => any?]
    (honey! @sys-db sql-map opts))
   ([sql-map]
+   [map? => any?]
    (honey! @sys-db sql-map {})))
 
-(s/fdef honey!
-  :args (s/cat :db (s/? ::db-spec)
-               :sql-map map?
-               :opts (s/? ::spec/opts-map)))
+(comment
+  (s/fdef honey!
+    :args (s/cat :db (s/? ::db-spec)
+                 :sql-map map?
+                 :opts (s/? ::spec/opts-map))))
 
-(defn honey-one!
+(>defn honey-one!
   ([db sql-map opts]
+   [malli-db map? malli-db-opts => any?]
    (jdbc/execute-one! db (sql/format sql-map) opts))
   ([sql-map opts]
+   [map? malli-db-opts => any?]
    (honey-one! @sys-db sql-map opts))
   ([sql-map]
+   [map? => any?]
    (honey-one! @sys-db sql-map {})))
 
-(s/fdef honey-one!
-  :args (s/cat :db (s/? ::db-spec)
-               :sql-map map?
-               :opts (s/? ::spec/opts-map)))
+(comment
+  (s/fdef honey-one!
+    :args (s/cat :db (s/? ::db-spec)
+                 :sql-map map?
+                 :opts (s/? ::spec/opts-map))))
 
 (defn upsert-one
   [table row & conflicts]
@@ -73,3 +87,8 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
     (psqlh/upsert base (apply psqlh/do-update-set
                               (apply psqlh/on-conflict {} conflicts)
                               (keys row)))))
+
+(s/fdef upsert-one
+  :args (s/cat :table keyword?
+               :row map?
+               :conflicts (s/+ keyword?)))

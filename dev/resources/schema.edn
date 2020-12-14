@@ -56,7 +56,8 @@
     :optional true
     :translate/chinese "查獲位置"} check-line]
 
- ^{:translate/chinese "所有項目檔"}
+ ^{:translate/chinese "所有項目檔"
+   :postgres.table/index [:idx-all-list-by-items-id :all-list :items-id]}
  all-list
  [^{:type Integer
     :postgres.column/identity-always true
@@ -73,7 +74,8 @@
   ^{:type Integer
     :translate/chinese "數量"} quantity]
 
- ^{:translate/chinese "項目清單檔"}
+ ^{:translate/chinese "項目清單檔"
+   :postgres.table/index [:idx-item-list-by-items-id :item-list :items-id]}
  item-list
  [^{:type Integer
     :postgres.column/identity-always true
@@ -94,7 +96,8 @@
     :optional true
     :translate/chinese "物品"} object]
 
- ^{:translate/chinese "項目人數檔"}
+ ^{:translate/chinese "項目人數檔"
+   :postgres.table/index [:idx-item-people-by-items-id :item-people :items-id]}
  item-people
  [^{:type Integer
     :postgres.column/identity-always true

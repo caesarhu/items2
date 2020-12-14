@@ -32,5 +32,8 @@
              :timestamp-opts {:timezone (items2.config/taipei-zone)}
              :appenders {:println {:min-level :info}
                          :rolling (items2.config/rolling-appender #ref [:appender-opts])}})}
+  :migratus
+  {:start (migratus.core/migrate #ref [:migratus])}
+
   :system
   {:stop (redelay.core/stop)}}}

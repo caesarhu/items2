@@ -5,3 +5,5 @@ CREATE TABLE item_people (
   people bigint,
   piece bigint NOT NULL
 );
+--;;
+CREATE INDEX idx_item_people_by_items_id ON item_people (items_id);

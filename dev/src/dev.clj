@@ -5,6 +5,7 @@
             [expound.alpha :as expound]
             [orchestra.spec.test :as stest]
             [items2.config :as config]
+            [items2.migratus :as migratus]
             [juxt.clip.repl :refer [start stop set-init! reset system]]
             [hodur-translate.core :as hodur]
             [items2.utils :as utils]
@@ -16,7 +17,9 @@
             [malli.core :as m]
             [malli.transform :as mt]
             [honeysql.core :as sql]
-            [items2.json :as j]))
+            [honeysql.helpers :as sqlh]
+            [items2.json :as j]
+            [items2.db.items-child :as child]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))
