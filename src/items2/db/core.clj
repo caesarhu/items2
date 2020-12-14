@@ -1,5 +1,6 @@
 (ns items2.db.core
   (:require [items2.config :as config]
+            [redelay.core :as redelay]
             [clojure.spec.alpha :as s]
             [next.jdbc :as jdbc]
             [next.jdbc.specs :as spec]
@@ -31,19 +32,21 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
         :next-jdbc-opts #(instance? next.jdbc.default_options.DefaultOptions %)))
 
 (def sys-db
-  (jdbc/with-options @config/db auto-opts))
+  (redelay/state
+    (let [db (jdbc/get-datasource @config/db)]
+      (jdbc/with-options db auto-opts))))
 
 (defn db-run
   [f & args]
-  (apply f sys-db args))
+  (apply f @sys-db args))
 
 (defn honey!
   ([db sql-map opts]
    (jdbc/execute! db (sql/format sql-map) opts))
   ([sql-map opts]
-   (honey! sys-db sql-map opts))
+   (honey! @sys-db sql-map opts))
   ([sql-map]
-   (honey! sys-db sql-map {})))
+   (honey! @sys-db sql-map {})))
 
 (s/fdef honey!
   :args (s/cat :db (s/? ::db-spec)
@@ -54,9 +57,9 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
   ([db sql-map opts]
    (jdbc/execute-one! db (sql/format sql-map) opts))
   ([sql-map opts]
-   (honey-one! sys-db sql-map opts))
+   (honey-one! @sys-db sql-map opts))
   ([sql-map]
-   (honey-one! sys-db sql-map {})))
+   (honey-one! @sys-db sql-map {})))
 
 (s/fdef honey-one!
   :args (s/cat :db (s/? ::db-spec)
