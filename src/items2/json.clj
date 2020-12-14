@@ -88,11 +88,10 @@
     raw-json-transformer
     t/custom-transformer))
 
-(def qualified-json
-  (utils/qualify-malli (->> (mu/select-keys im/malli-items [:id])
-                            mu/optional-keys
-                            (mu/merge im/malli-items))
-                       :items))
+(def item-schema
+  (let [id-optional (->> (mu/select-keys (:items im/items-malli) [:items/id])
+                         mu/optional-keys)]
+    (mu/merge (:items im/items-malli) id-optional)))
 
 (>defn json-parser
   [file-name]

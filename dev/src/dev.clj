@@ -1,6 +1,6 @@
 (ns dev
   (:require [fipp.edn :refer [pprint]]
-            [clojure.spec.alpha :as spec.alpha]
+            [clojure.spec.alpha :as s]
             [clojure.java.io :as io]
             [expound.alpha :as expound]
             [orchestra.spec.test :as stest]
@@ -8,24 +8,16 @@
             [juxt.clip.repl :refer [start stop set-init! reset system]]
             [hodur-translate.core :as hodur]
             [items2.utils :as utils]
-            [java-time :as jt]
-            [medley.core :as medley]
-            [jsonista.core :as json]
-            [malli.core :as m]
-            [malli.transform :as mt]
-            [malli.provider :as mp]
-            [items2.items-malli :as im]
-            [com.rpl.specter :as sp]
-            [exoscale.ex :as ex]
-            [items2.json :as j]
-            [items2.transform :as t]
-            [datoteka.core :as fs]
-            [malli.util :as mu]
-            [malli.error :as me]
-            [kaocha.repl :as k]
-            [redelay.core :as redelay]))
+            [clojure.string :as string]
+            [next.jdbc :as jdbc]
+            [items2.db.core :as db]
+            [items2.db.items :as items]
+            [next.jdbc.specs :as spec]
+            [honeysql.core :as sql]
+            [items2.json :as j]))
 
-(set-init! (fn [] (config/read-edn-config :dev)))
+;(set-init! (fn [] (config/read-edn-config :dev)))
+(set-init! (fn [] @config/config))
 
 (comment
   (start)
@@ -48,7 +40,7 @@
 
 (defn spit-malli
   [path]
-  (hodur/spit-malli-schema path (meta-db)))
+  (hodur/spit-malli-schema path (meta-db) true))
 
 (defn slurp-json
   [path]
@@ -64,7 +56,7 @@
 
 (defn instrument
   []
-  (set! spec.alpha/*explain-out* expound/printer)
+  (set! s/*explain-out* expound/printer)
   (stest/instrument))
 
 (instrument)

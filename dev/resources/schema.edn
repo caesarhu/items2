@@ -4,7 +4,9 @@
    :translate/tag true}
  default
 
- ^{:translate/chinese "危安物品檔"}
+ ^{:translate/chinese "危安物品檔"
+   :postgres.table/index [[:idx-items-by-unit :items :unit :subunit :police :check-time]
+                          [:idx-items-by-file-time :items :file-time]]}
  items
  [^{:type Integer
     :postgres.column/identity-always true
@@ -43,7 +45,7 @@
     :translate/chinese "航空貨運業者簽章"} trader-sign
   ^{:type String
     :optional true
-    :translate/chinese "輸入設備IP"} ip
+    :translate/chinese "輸入設備-ip"} ip
   ^{:type String
     :optional true
     :translate/chinese "所有備註"} memo

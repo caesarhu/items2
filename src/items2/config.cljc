@@ -7,11 +7,12 @@
             [taoensso.timbre.appenders.3rd-party.rolling :as rolling]
             [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
             [hodur-translate.core :as hodur]
-            [redelay.core :as redelay]))
+            [redelay.core :as redelay]
+            [hikari-cp.core :as hikari]))
 
 (defn read-edn-config
   ([profile]
-   (aero/read-config (io/resource "config.edn") {:profile profile}))
+   (aero/read-config (io/resource "items2/config.edn") {:profile profile}))
   ([]
    (read-edn-config :dev)))
 
@@ -21,23 +22,30 @@
 
 ;;; database migrations
 
-(defn migratus-config
-  ([tag]
-   (:migratus (read-edn-config tag)))
-  ([]
-   (migratus-config :dev)))
+(def migratus-config
+  (redelay/state (:migratus @config)))
 
 (defn migrate
-  ([tag]
-   (migratus/migrate (migratus-config tag)))
-  ([]
-   (migrate :dev)))
+  []
+  (migratus/migrate @migratus-config))
 
 (defn rollback
-  ([tag]
-   (migratus/rollback (migratus-config tag)))
-  ([]
-   (rollback :dev)))
+  []
+  (migratus/rollback @migratus-config))
+
+(defn reset-db
+  []
+  (migratus/reset @migratus-config))
+
+;;; database datasource
+
+(def db
+  (redelay/state :start
+                 (migrate)
+                 (hikari/make-datasource (:hikari-cp @config))
+
+                 :stop
+                 (hikari/close-datasource this)))
 
 ;;; timbre
 

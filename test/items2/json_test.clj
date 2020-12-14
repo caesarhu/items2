@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [items2.json :refer :all]
             [items2.helpers :refer :all]
-            [java-time :as jt]))
+            [java-time :as jt]
+            [malli.core :as m]))
 
 (comment
   (use-fixtures
@@ -14,7 +15,7 @@
 (def json-test-data
   {:危安物品檔/所有項目數量 '({:all-list/item "石頭", :all-list/quantity 1}
                    {:all-list/item "高壓罐", :all-list/quantity 1}),
-   :items/file-time (jt/local-date-time "2020-12-09T19:53:22") ,
+   :items/file-time (jt/local-date-time "2020-11-24T11:20:32") ,
    :items/ip "0.0.0.0",
    :items/passenger-sign "2020-11-24-11-18-20.898-passengerSign.jpg",
    :items/unit "安檢大隊",
@@ -62,4 +63,5 @@
 
 (deftest json-parser-test
   (testing "test items2.json.json-parser"
-    (is (= json-test-data (json-parser json-file)))))
+    (is (= json-test-data (json-parser json-file)))
+    (is (= true (m/validate item-schema (json-parser json-file))))))

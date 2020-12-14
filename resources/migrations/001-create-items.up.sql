@@ -17,3 +17,7 @@ CREATE TABLE items (
   trader_sign text,
   unit text NOT NULL
 );
+--;;
+CREATE INDEX idx_items_by_unit ON items (unit, subunit, police, check_time);
+--;;
+CREATE INDEX idx_items_by_file_time ON items (file_time);

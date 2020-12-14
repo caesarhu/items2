@@ -3,84 +3,72 @@
 
 ;;; auto generate by hodur
 
-(def malli-item-people
-  [:map
-   [:id clojure.core/pos-int?]
-   [:items-id clojure.core/pos-int?]
-   [:kind clojure.core/string?]
-   [:people {:optional true} [:maybe clojure.core/integer?]]
-   [:piece clojure.core/integer?]])
+(def items-malli
+  {:all-list
+   [:map
+    [:all-list/id pos-int?]
+    [:all-list/item string?]
+    [:all-list/items-id pos-int?]
+    [:all-list/quantity integer?]],
+   :ipad
+   [:map
+    [:ipad/id pos-int?]
+    [:ipad/ip string?]
+    [:ipad/ipad-name string?]
+    [:ipad/subunit {:optional true} [:maybe string?]]
+    [:ipad/unit string?]],
+   :item-people
+   [:map
+    [:item-people/id pos-int?]
+    [:item-people/items-id pos-int?]
+    [:item-people/kind string?]
+    [:item-people/people {:optional true} [:maybe integer?]]
+    [:item-people/piece integer?]],
+   :units
+   [:map
+    [:units/id pos-int?]
+    [:units/subunit {:optional true} [:maybe string?]]
+    [:units/unit string?]],
+   :mail-list
+   [:map
+    [:mail-list/email string?]
+    [:mail-list/id pos-int?]
+    [:mail-list/memo {:optional true} [:maybe string?]]
+    [:mail-list/name {:optional true} [:maybe string?]]
+    [:mail-list/position {:optional true} [:maybe string?]]
+    [:mail-list/subunit {:optional true} [:maybe string?]]
+    [:mail-list/unit string?]],
+   :item-list
+   [:map
+    [:item-list/id pos-int?]
+    [:item-list/items-id pos-int?]
+    [:item-list/kind string?]
+    [:item-list/object {:optional true} [:maybe string?]]
+    [:item-list/subkind {:optional true} [:maybe string?]]],
+   :items
+   [:map
+    [:items/carry string?]
+    [:items/check-line {:optional true} [:maybe string?]]
+    [:items/check-sign {:optional true} [:maybe string?]]
+    [:items/check-time local-date-time]
+    [:items/file string?]
+    [:items/file-time local-date-time]
+    [:items/flight {:optional true} [:maybe string?]]
+    [:items/id pos-int?]
+    [:items/ip {:optional true} [:maybe string?]]
+    [:items/memo {:optional true} [:maybe string?]]
+    [:items/passenger-id {:optional true} [:maybe string?]]
+    [:items/passenger-sign {:optional true} [:maybe string?]]
+    [:items/police string?]
+    [:items/process string?]
+    [:items/subunit {:optional true} [:maybe string?]]
+    [:items/trader-sign {:optional true} [:maybe string?]]
+    [:items/unit string?]],
+   :last-time
+   [:map
+    [:last-time/fail integer?]
+    [:last-time/file-time local-date-time]
+    [:last-time/id pos-int?]
+    [:last-time/success integer?]
+    [:last-time/total integer?]]})
 
-
-(def malli-item-list
-  [:map
-   [:id clojure.core/pos-int?]
-   [:items-id clojure.core/pos-int?]
-   [:kind clojure.core/string?]
-   [:object {:optional true} [:maybe clojure.core/string?]]
-   [:subkind {:optional true} [:maybe clojure.core/string?]]])
-
-
-(def malli-units
-  [:map
-   [:id clojure.core/pos-int?]
-   [:subunit {:optional true} [:maybe clojure.core/string?]]
-   [:unit clojure.core/string?]])
-
-
-(def malli-mail-list
-  [:map
-   [:email clojure.core/string?]
-   [:id clojure.core/pos-int?]
-   [:memo {:optional true} [:maybe clojure.core/string?]]
-   [:name {:optional true} [:maybe clojure.core/string?]]
-   [:position {:optional true} [:maybe clojure.core/string?]]
-   [:subunit {:optional true} [:maybe clojure.core/string?]]
-   [:unit clojure.core/string?]])
-
-
-(def malli-items
-  [:map
-   [:carry clojure.core/string?]
-   [:check-line {:optional true} [:maybe clojure.core/string?]]
-   [:check-sign {:optional true} [:maybe clojure.core/string?]]
-   [:check-time local-date-time]
-   [:file clojure.core/string?]
-   [:file-time local-date-time]
-   [:flight {:optional true} [:maybe clojure.core/string?]]
-   [:id clojure.core/pos-int?]
-   [:ip {:optional true} [:maybe clojure.core/string?]]
-   [:memo {:optional true} [:maybe clojure.core/string?]]
-   [:passenger-id {:optional true} [:maybe clojure.core/string?]]
-   [:passenger-sign {:optional true} [:maybe clojure.core/string?]]
-   [:police clojure.core/string?]
-   [:process clojure.core/string?]
-   [:subunit {:optional true} [:maybe clojure.core/string?]]
-   [:trader-sign {:optional true} [:maybe clojure.core/string?]]
-   [:unit clojure.core/string?]])
-
-
-(def malli-last-time
-  [:map
-   [:fail clojure.core/integer?]
-   [:file-time local-date-time]
-   [:id clojure.core/pos-int?]
-   [:success clojure.core/integer?]
-   [:total clojure.core/integer?]])
-
-
-(def malli-all-list
-  [:map
-   [:id clojure.core/pos-int?]
-   [:item clojure.core/string?]
-   [:items-id clojure.core/pos-int?]
-   [:quantity clojure.core/integer?]])
-
-
-(def malli-ipad
-  [:map
-   [:id clojure.core/pos-int?]
-   [:ip clojure.core/string?]
-   [:ipad-name clojure.core/string?]
-   [:subunit {:optional true} [:maybe clojure.core/string?]]
-   [:unit clojure.core/string?]])
