@@ -28,7 +28,7 @@
    (let [sql-fn (fn [t]
                   (sql/build :delete-from t :where [:= :items-id items-id]))
          sql-maps (map sql-fn tables)]
-     (dorun (map #(db/honey! db % {}) sql-maps))))
+     (mapv #(db/honey! db % {}) sql-maps)))
   ([items-id tables]
    [pos-int? [:sequential keyword?] => any?]
    (delete-table-by-items-id! @db/sys-db items-id tables)))
@@ -41,7 +41,7 @@
 
 (>defn merge-items-id
   [item-raw upserted-item children]
-  [map? map? [:sequential keyword?] => [:sequential vector?]]
+  [map? map? [:sequential keyword?] => [:sequential [:tuple keyword? [:sequential [:map-of keyword? any?]]]]]
   (let [items-id (find-items-id upserted-item)
         merge-fn (fn [table]
                    (let [values (get item-raw table)
@@ -51,12 +51,12 @@
 
 (>defn insert-items-child!
   ([db child]
-   [db/malli-db vector? => any?]
+   [db/malli-db [:tuple keyword? [:sequential [:map-of keyword? any?]]] => any?]
    (let [[table values] child
          sql-map (-> (sqlh/insert-into table)
                      (sqlh/values values))]
      (db/honey! db sql-map {})))
   ([child]
-   [vector? => any?]
+   [[:tuple keyword? [:sequential [:map-of keyword? any?]]] => any?]
    (insert-items-child! @db/sys-db child)))
 
