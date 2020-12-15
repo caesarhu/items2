@@ -32,6 +32,10 @@
    [pos-int? [:sequential keyword?] => any?]
    (delete-table-by-items-id! @db/sys-db items-id tables)))
 
+(>defn merge-items-id
+  [from to]
+  [map? seq? => map?])
+
 (>defn insert-table-by-items-id!
   ([db items-id rows table]
    [db/malli-db pos-int? seq? keyword? => any?]
