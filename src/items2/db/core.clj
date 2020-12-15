@@ -1,5 +1,6 @@
 (ns items2.db.core
-  (:require [items2.config :as config]
+  (:require [next.jdbc.date-time :refer [read-as-local]]
+            [items2.config :as config]
             [aave.core :refer [>defn >defn-]]
             [redelay.core :as redelay]
             [clojure.spec.alpha :as s]
@@ -8,6 +9,10 @@
             [honeysql.core :as sql]
             [honeysql.helpers :as sqlh]
             [honeysql-postgres.helpers :as psqlh]))
+
+;;; java-time convert
+
+(read-as-local)
 
 (let [kebab-case# (requiring-resolve 'camel-snake-kebab.core/->kebab-case)
       snake-case# (requiring-resolve 'camel-snake-kebab.core/->snake_case)]

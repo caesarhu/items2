@@ -10,6 +10,7 @@
             [items2.json :as j]
             [items2.utils :as utils]
             [taoensso.timbre :as timbre]
+            [items2.items-malli :as im]
             [items2.db.items-child :as child]))
 
 (>defn upsert-item!
@@ -24,9 +25,12 @@
    [map? => any?]
    (upsert-item! @db/sys-db item)))
 
+(def upserted-schema
+  (:items im/items-malli))
+
 (>defn upsert-item-and-children!
   ([db item]
-   [db/malli-db map? => map?]
+   [db/malli-db j/parsed-item-schema => map?]
    (when-let [upserted (upsert-item! db item)]
      (let [tables (:items-child @config/config)
            children (child/merge-items-id item upserted tables)]
@@ -34,5 +38,5 @@
        (mapv child/insert-items-child! children)
        upserted)))
   ([item]
-   [map? => map?]
+   [j/parsed-item-schema => map?]
    (upsert-item-and-children! @db/sys-db item)))
