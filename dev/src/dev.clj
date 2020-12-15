@@ -1,6 +1,8 @@
 (ns dev
   (:require [fipp.edn :refer [pprint]]
             [clojure.spec.alpha :as s]
+            [datoteka.core :as fs]
+            [jsonista.core :as json]
             [clojure.java.io :as io]
             [expound.alpha :as expound]
             [orchestra.spec.test :as stest]

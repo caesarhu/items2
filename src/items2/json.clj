@@ -1,6 +1,7 @@
 (ns items2.json
   (:require [aave.core :refer [>defn >defn-]]
             [items2.transform :refer [custom-transformer]]
+            [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]
             [clojure.string :as string]
             [malli.core :as m]
             [java-time :as jt]
@@ -92,21 +93,43 @@
 (def item-schema
   (utils/optional-id-schema (:items im/items-malli)))
 
-(def all-list-schema
-  (utils/dissoc-schema (:all-list im/items-malli) :all-list/id :all-list/items-id))
-
-(def item-list-schema
-  (utils/dissoc-schema (:item-list im/items-malli) :item-list/id :item-list/items-id))
-
-(def item-people-schema
-  (utils/dissoc-schema (:item-people im/items-malli) :item-people/id :item-people/items-id))
+(def parsed-item-schema
+  [:map
+   [:items/file-time local-date-time]
+   [:items/ip {:optional true} [:maybe string?]]
+   [:items/passenger-sign {:optional true} [:maybe string?]]
+   [:items/unit string?]
+   [:items/trader-sign {:optional true} [:maybe string?]]
+   [:items/check-sign string?]
+   [:items/process string?]
+   [:items/file string?]
+   [:all-list
+    [:sequential
+     [:map [:all-list/item string?] [:all-list/quantity int?]]]]
+   [:items/check-time local-date-time]
+   [:items/check-line {:optional true} [:maybe string?]]
+   [:item-people
+    [:vector
+     [:map
+      [:item-people/kind string?]
+      [:item-people/piece int?]
+      [:item-people/people {:optional true} [:maybe int?]]]]]
+   [:items/passenger-id {:optional true} [:maybe string?]]
+   [:items/flight string?]
+   [:item-list
+    [:vector
+     [:map
+      [:item-list/kind string?]
+      [:item-list/subkind {:optional true} [:maybe string?]]
+      [:item-list/object {:optional true} [:maybe string?]]]]]
+   [:items/carry string?]
+   [:items/subunit {:optional true} [:maybe string?]]
+   [:items/police string?]
+   [:items/memo {:optional true} [:maybe string?]]])
 
 (defn json-validate
   [{:keys [all-list item-list item-people] :as json}]
-  (mapv #(utils/validate-throw all-list-schema %) all-list)
-  (mapv #(utils/validate-throw item-list-schema %) item-list)
-  (mapv #(utils/validate-throw item-people-schema %) item-people)
-  (utils/validate-throw item-schema json))
+  (utils/validate-throw parsed-item-schema json))
 
 (>defn json-parser
   [file-name]
