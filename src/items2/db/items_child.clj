@@ -10,7 +10,8 @@
             [items2.items-malli :as im]
             [items2.json :as j]
             [items2.utils :as utils]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre]
+            [medley.core :as medley]))
 
 (def all-list-schema
   (utils/optional-id-schema (:all-list im/items-malli)))
@@ -32,17 +33,30 @@
    [pos-int? [:sequential keyword?] => any?]
    (delete-table-by-items-id! @db/sys-db items-id tables)))
 
-(>defn merge-items-id
-  [from to]
-  [map? seq? => map?])
+(>defn find-items-id
+  [upserted-item]
+  [map? => pos-int?]
+  (-> (medley/find-first #(= "id" (name (key %))) upserted-item)
+      val))
 
-(>defn insert-table-by-items-id!
-  ([db items-id rows table]
-   [db/malli-db pos-int? seq? keyword? => any?]
-   (let [values (map #(assoc % :items-id items-id) rows)
+(>defn merge-items-id
+  [item-raw upserted-item children]
+  [map? map? [:sequential keyword?] => [:sequential vector?]]
+  (let [items-id (find-items-id upserted-item)
+        merge-fn (fn [table]
+                   (let [values (get item-raw table)
+                         id-values (map #(assoc % :items-id items-id) values)]
+                     [table id-values]))]
+    (map merge-fn children)))
+
+(>defn insert-items-child!
+  ([db child]
+   [db/malli-db vector? => any?]
+   (let [[table values] child
          sql-map (-> (sqlh/insert-into table)
                      (sqlh/values values))]
      (db/honey! db sql-map {})))
-  ([items-id rows table]
-   [pos-int? seq? keyword? => any?]
-   (insert-table-by-items-id! @db/sys-db items-id rows table)))
+  ([child]
+   [vector? => any?]
+   (insert-items-child! @db/sys-db child)))
+

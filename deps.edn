@@ -23,7 +23,8 @@
                               org.openjfx/javafx-web      {:mvn/version "15-ea+6"}}
                  ;:main-opts ["-m" "cognitect.rebl"]
                  :main-opts ["-m" "vlaaad.reveal" "repl"]
-                 :jvm-opts ["-Dvlaaad.reveal.prefs={:font-family \"Noto Sans Mono CJK TC\" :font-size 14}"]}
+                 ;:jvm-opts ["-Dvlaaad.reveal.prefs={:font-family \"Noto Sans Mono CJK TC\" :font-size 14}"]
+                 :jvm-opts ["-Dvlaaad.reveal.prefs={:font-family \"Monospaced\" :font-size 14}"]}
            :test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.732"}}}}
 
  :deps {org.clojure/test.check {:mvn/version "1.1.0"}

@@ -24,19 +24,15 @@
    [map? => any?]
    (upsert-item! @db/sys-db item)))
 
-(>defn upsert-item-and-child!
+(>defn upsert-item-and-children!
   ([db item]
-   [db/malli-db map? => any?]
-   (let [result (upsert-item! db item)
-         items-id (:items/id result)
-         child-tables [:all-list :item-list :item-people]
-         child-map (select-keys item child-tables)
-         _ (child/delete-table-by-items-id! db items-id child-tables)
-         args-v (map #(vector db items-id (val %) (key %)) child-map)]
-     (dorun
-       (for [v args-v]
-         (apply child/insert-table-by-items-id! v)))
-     result))
+   [db/malli-db map? => map?]
+   (when-let [upserted (upsert-item! db item)]
+     (let [tables (:items-child @config/config)
+           children (child/merge-items-id item upserted tables)]
+       (child/delete-table-by-items-id! db (child/find-items-id upserted) tables)
+       (mapv child/insert-items-child! children)
+       upserted)))
   ([item]
-   [map? => any?]
-   (upsert-item-and-child! @db/sys-db item)))
+   [map? => map?]
+   (upsert-item-and-children! @db/sys-db item)))
