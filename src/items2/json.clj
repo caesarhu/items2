@@ -14,7 +14,8 @@
             [malli.util :as mu]
             [malli.transform :as mt]
             [items2.items-malli :as im]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre]
+            [malli.error :as me]))
 
 (>defn ->int
   [s]
@@ -89,9 +90,23 @@
     t/custom-transformer))
 
 (def item-schema
-  (let [id-optional (->> (mu/select-keys (:items im/items-malli) [:items/id])
-                         mu/optional-keys)]
-    (mu/merge (:items im/items-malli) id-optional)))
+  (utils/optional-id-schema (:items im/items-malli)))
+
+(def all-list-schema
+  (utils/dissoc-schema (:all-list im/items-malli) :all-list/id :all-list/items-id))
+
+(def item-list-schema
+  (utils/dissoc-schema (:item-list im/items-malli) :item-list/id :item-list/items-id))
+
+(def item-people-schema
+  (utils/dissoc-schema (:item-people im/items-malli) :item-people/id :item-people/items-id))
+
+(defn json-validate
+  [{:keys [all-list item-list item-people] :as json}]
+  (mapv #(utils/validate-throw all-list-schema %) all-list)
+  (mapv #(utils/validate-throw item-list-schema %) item-list)
+  (mapv #(utils/validate-throw item-people-schema %) item-people)
+  (utils/validate-throw item-schema json))
 
 (>defn json-parser
   [file-name]
@@ -101,14 +116,22 @@
           json (m/decode item-json (json/read-value file) json-transformer)
           {:keys [日期 時間 勤務單位]} json
           datetime (jt/local-date-time (string/join "T" [日期 時間]))
-          ftime (utils/file-time file)]
-      (->> (merge json 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
-           (medley/map-keys #(keyword "危安物品檔" (name %)))
-           (medley/map-keys utils/mata-translate)))
+          ftime (utils/file-time file)
+          result (->> (dissoc json :日期 :時間 :勤務單位)
+                      (merge 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
+                      (medley/map-keys #(keyword "危安物品檔" (name %)))
+                      (medley/map-keys utils/mata-translate)
+                      (medley/map-keys utils/json-translate))]
+      (json-validate result))
+    (catch ::ex/incorrect data
+      (timbre/log :error ::json-parser data)
+      (throw (ex/ex-info (:message data)
+                         ::ex/incorrect
+                         (merge data {:from ::json-parser}))))
     (catch Throwable e
       (timbre/log :error ::json-parser (utils/ex-cause-and-msg e))
       (throw (ex/ex-info (utils/ex-cause-and-msg e)
-                         ::ex/not-found
+                         ::ex/fault
                          {:from ::json-parser}
                          e)))))
 

@@ -12,7 +12,10 @@
  :hikari-cp {:jdbc-url #ref [:connection-uri]}
 
  :json-transform {:旅客護照號碼/身分證號 :旅客證號
-                  :IpAddress :輸入設備-ip}
+                  :IpAddress :輸入設備-ip
+                  :危安物品檔/所有項目數量 :all-list
+                  :危安物品檔/項目人數 :item-people
+                  :危安物品檔/項目清單 :item-list}
 
  :bug-unit {"臺中局" "臺中所"
             "花蓮局" "花蓮所"}
@@ -24,6 +27,8 @@
            :default {:path "logs/items2.log"
                      :max-size 60
                      :pattern :daily}}
+
+ :items-child [:all-list :item-list :item-people]
 
  :components
  {:timbre

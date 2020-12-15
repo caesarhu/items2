@@ -6,12 +6,26 @@
             [hodur-translate.core :as hodur]
             [medley.core :as medley]
             [java-time :as jt]
+            [malli.core :as m]
             [malli.util :as mu]
+            [malli.error :as me]
+            [taoensso.timbre :as timbre]
+            [exoscale.ex :as ex]
             [clojure.string :as string]))
 
 (defn ex-cause-and-msg
   [throwable]
   (str "cause: " (medley/ex-cause throwable) "; " "message: " (medley/ex-message throwable)))
+
+(defn validate-throw
+  [schema value]
+  (if (m/validate schema value)
+    value
+    (let [msg (me/humanize (m/explain schema value))]
+      (throw (ex/ex-info msg
+                         ::ex/incorrect
+                         {:schema schema
+                          :message msg})))))
 
 (>defn trim-space
   [s]
@@ -83,17 +97,18 @@
       jt/fixed-clock
       jt/local-date-time))
 
+(defn optional-id-schema
+  [schema]
+  (let [ns (some-> schema second first namespace)
+        id-key (if ns
+                 (keyword ns "id")
+                 :id)
+        id-optional (->> (mu/select-keys schema [id-key])
+                         mu/optional-keys)]
+    (mu/merge schema id-optional)))
 
-(defn partial-right
-  "Takes a function f and fewer than the normal arguments to f, and
- returns a fn that takes a variable number of additional args. When
- called, the returned function calls f with additional args + args."
-  ([f] f)
-  ([f arg1]
-   (fn [& args] (apply f (concat args [arg1]))))
-  ([f arg1 arg2]
-   (fn [& args] (apply f (concat args [arg1 arg2]))))
-  ([f arg1 arg2 arg3]
-   (fn [& args] (apply f (concat args [arg1 arg2 arg3]))))
-  ([f arg1 arg2 arg3 & more]
-   (fn [& args] (apply f (concat args (concat [arg1 arg2 arg3] more))))))
+(defn dissoc-schema
+  [schema & s-keys]
+  (reduce (fn [init k]
+            (mu/dissoc init k))
+          schema s-keys))
