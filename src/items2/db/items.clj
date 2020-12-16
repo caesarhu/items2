@@ -29,7 +29,7 @@
 
 (>defn upsert-item-and-children!
   ([db item-and-children]
-   [db/malli-db j/parsed-item-schema => map?]
+   [db/malli-db j/parsed-item-schema => [:or map? nil?]]
    (ex/try+
      (when-let [upserted (upsert-item! db (:item item-and-children))]
        (let [tables (:items-child @config/config)
@@ -42,13 +42,10 @@
                    ::upsert-item-and-children!
                    (utils/ex-cause-and-msg e)
                    {:item item-and-children
-                    :from ::upsert-item-and-children!})
-       (throw (ex/ex-info (utils/ex-cause-and-msg e)
-                          ::ex/fault
-                          {:from ::upsert-item-and-children!}
-                          e)))))
+                    :from ::upsert-item-and-children!
+                    :info "發生未知錯誤，忽略錯誤繼續執行!"}))))
   ([item-and-children]
-   [j/parsed-item-schema => map?]
+   [j/parsed-item-schema => [:or map? nil?]]
    (upsert-item-and-children! @db/sys-db item-and-children)))
 
 (>defn import-item-files!
