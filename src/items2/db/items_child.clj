@@ -46,7 +46,7 @@
   (let [items-id (find-items-id upserted-item)
         merge-fn (fn [table]
                    (let [values (get item-raw table)
-                         id-values (map #(assoc % :items-id items-id) values)]
+                         id-values (map #(assoc % (utils/qualify-key table :items-id) items-id) values)]
                      [table id-values]))]
     (map merge-fn children)))
 

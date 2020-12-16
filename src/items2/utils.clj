@@ -63,6 +63,11 @@
   [map? vector? => map?]
   (medley/map-keys #(hodur/dict-translate dict %) m))
 
+(>defn qualify-key
+  [ns k]
+  [[:or keyword? symbol? string?] [:or keyword? symbol? string?] => qualified-keyword?]
+  (keyword (name ns) (name k)))
+
 (>defn qualify-map
   [m namespace]
   [map? [:or keyword? string? symbol?] => map?]

@@ -46,14 +46,14 @@
 
 (>defn parse-all-list
   [m]
-  [map? => seq?]
-  (map (fn [entry]
-         (let [k (key entry)
-               v (val entry)
-               result {:所有項目檔/項目 k
-                       :所有項目檔/數量 (utils/str->int v)}]
-           (utils/translate-map result @config/meta-dict)))
-       m))
+  [map? => vector?]
+  (vec (map (fn [entry]
+              (let [k (key entry)
+                    v (val entry)
+                    result {:所有項目檔/項目 k
+                            :所有項目檔/數量 (utils/str->int v)}]
+                (utils/translate-map result @config/meta-dict)))
+            m)))
 
 (def item-json
   [:map
@@ -94,18 +94,17 @@
     (utils/dissoc-qualified-schema schema c-key :id :items-id)))
 
 (def parsed-item-schema
-  (mu/merge
-    [:map
-     [:all-list
-      [:sequential
-       (make-child-schema :all-list)]]
-     [:item-people
-      [:vector
-       (make-child-schema :item-people)]]
-     [:item-list
-      [:vector
-       (make-child-schema :item-list)]]]
-    item-schema))
+  [:map
+   [:all-list
+    [:vector
+     (make-child-schema :all-list)]]
+   [:item-people
+    [:vector
+     (make-child-schema :item-people)]]
+   [:item-list
+    [:vector
+     (make-child-schema :item-list)]]
+   [:item item-schema]])
 
 (>defn json-parser
   [file-name]
@@ -118,17 +117,19 @@
           {:keys [日期 時間 勤務單位]} json
           datetime (jt/local-date-time (string/join "T" [日期 時間]))
           ftime (utils/file-time file)
-          result (->> (dissoc json :日期 :時間 :勤務單位)
-                      (merge 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
-                      (medley/map-keys #(keyword "危安物品檔" (name %)))
-                      (medley/map-keys utils/mata-translate)
-                      (medley/map-keys utils/json-translate))]
+          raw-json (->> (dissoc json :日期 :時間 :勤務單位)
+                        (merge 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
+                        (medley/map-keys #(utils/qualify-key "危安物品檔" %))
+                        (medley/map-keys utils/mata-translate)
+                        (medley/map-keys utils/json-translate))
+          tables (:items-child @config/config)
+          result (merge {:item (apply dissoc raw-json tables)} (select-keys raw-json tables))]
       (when-not (m/validate parsed-item-schema result)
         (timbre/log :error ::json-parser {:explain
-                                          (me/humanize (m/explain parsed-item-schema parsed-item-schema))
-                                          :item result}))
-      ;(utils/validate-throw parsed-item-schema result)
-      result)
+                                          (me/humanize (m/explain parsed-item-schema result))
+                                          :item result
+                                          :file file-name}))
+      (utils/validate-throw parsed-item-schema result))
     (catch ::ex/incorrect data
       (timbre/log :error ::json-parser data)
       (throw (ex/ex-info (:message data)

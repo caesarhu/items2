@@ -27,16 +27,13 @@
    [map? => any?]
    (upsert-item! @db/sys-db item)))
 
-(def upserted-schema
-  (:items im/items-malli))
-
 (>defn upsert-item-and-children!
-  ([db item]
+  ([db item-and-children]
    [db/malli-db j/parsed-item-schema => map?]
    (ex/try+
-     (when-let [upserted (upsert-item! db item)]
+     (when-let [upserted (upsert-item! db (:item item-and-children))]
        (let [tables (:items-child @config/config)
-             children (child/merge-items-id item upserted tables)]
+             children (child/merge-items-id item-and-children upserted tables)]
          (child/delete-table-by-items-id! db (child/find-items-id upserted) tables)
          (mapv child/insert-items-child! children)
          upserted))
@@ -44,15 +41,15 @@
        (timbre/log :error
                    ::upsert-item-and-children!
                    (utils/ex-cause-and-msg e)
-                   {:item item
+                   {:item item-and-children
                     :from ::upsert-item-and-children!})
        (throw (ex/ex-info (utils/ex-cause-and-msg e)
                           ::ex/fault
                           {:from ::upsert-item-and-children!}
                           e)))))
-  ([item]
+  ([item-and-children]
    [j/parsed-item-schema => map?]
-   (upsert-item-and-children! @db/sys-db item)))
+   (upsert-item-and-children! @db/sys-db item-and-children)))
 
 (>defn import-item-files!
   ([db json-files]
