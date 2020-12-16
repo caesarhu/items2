@@ -52,7 +52,7 @@
 
 (>defn insert-items-child!
   ([db child]
-   [db/malli-db [:tuple keyword? [:sequential [:map-of keyword? any?]]] => any?]
+   [db/malli-db coll? => any?]
    (ex/try+
      (let [[table values] child
            sql-map (-> (sqlh/insert-into table)
@@ -70,6 +70,6 @@
                           {:from ::insert-items-child!}
                           e)))))
   ([child]
-   [[:tuple keyword? [:sequential [:map-of keyword? any?]]] => any?]
+   [coll? => any?]
    (insert-items-child! @db/sys-db child)))
 

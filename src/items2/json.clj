@@ -88,39 +88,24 @@
 (def item-schema
   (utils/optional-id-schema (:items im/items-malli)))
 
+(defn make-child-schema
+  [c-key]
+  (let [schema (get im/items-malli c-key)]
+    (utils/dissoc-qualified-schema schema c-key :id :items-id)))
+
 (def parsed-item-schema
-  [:map
-   [:items/file-time local-date-time]
-   [:items/ip {:optional true} [:maybe string?]]
-   [:items/passenger-sign {:optional true} [:maybe string?]]
-   [:items/unit string?]
-   [:items/trader-sign {:optional true} [:maybe string?]]
-   [:items/check-sign string?]
-   [:items/process string?]
-   [:items/file string?]
-   [:all-list
-    [:sequential
-     [:map [:all-list/item string?] [:all-list/quantity int?]]]]
-   [:items/check-time local-date-time]
-   [:items/check-line {:optional true} [:maybe string?]]
-   [:item-people
-    [:vector
-     [:map
-      [:item-people/kind string?]
-      [:item-people/piece int?]
-      [:item-people/people {:optional true} [:maybe int?]]]]]
-   [:items/passenger-id {:optional true} [:maybe string?]]
-   [:items/flight string?]
-   [:item-list
-    [:vector
-     [:map
-      [:item-list/kind string?]
-      [:item-list/subkind {:optional true} [:maybe string?]]
-      [:item-list/object {:optional true} [:maybe string?]]]]]
-   [:items/carry string?]
-   [:items/subunit {:optional true} [:maybe string?]]
-   [:items/police string?]
-   [:items/memo {:optional true} [:maybe string?]]])
+  (mu/merge
+    [:map
+     [:all-list
+      [:sequential
+       (make-child-schema :all-list)]]
+     [:item-people
+      [:vector
+       (make-child-schema :item-people)]]
+     [:item-list
+      [:vector
+       (make-child-schema :item-list)]]]
+    item-schema))
 
 (>defn json-parser
   [file-name]
@@ -140,17 +125,16 @@
                       (medley/map-keys utils/json-translate))]
       (when-not (m/validate parsed-item-schema result)
         (timbre/log :error ::json-parser {:explain
-                                          (-> (m/explain parsed-item-schema parsed-item-schema)
-                                              me/humanize)
+                                          (me/humanize (m/explain parsed-item-schema parsed-item-schema))
                                           :item result}))
-      (utils/validate-throw parsed-item-schema result))
+      ;(utils/validate-throw parsed-item-schema result)
+      result)
     (catch ::ex/incorrect data
       (timbre/log :error ::json-parser data)
       (throw (ex/ex-info (:message data)
                          ::ex/incorrect
                          (merge data {:from ::json-parser}))))
     (catch Throwable e
-      (timbre/log :error ::json-parser (utils/ex-cause-and-msg e))
       (throw (ex/ex-info (utils/ex-cause-and-msg e)
                          ::ex/fault
                          {:from ::json-parser}

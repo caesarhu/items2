@@ -19,6 +19,7 @@
   ^{:type DateTime
     :translate/chinese "原始檔案時間"} file-time
   ^{:type String
+    :optional true
     :translate/chinese "攜帶方式"} carry
   ^{:type DateTime
     :translate/chinese "查獲時間"} check-time
@@ -33,6 +34,7 @@
   ^{:type String
     :translate/chinese "員警姓名"} police
   ^{:type String
+    :optional true
     :translate/chinese "處理情形"} process
   ^{:type String
     :optional true

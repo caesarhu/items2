@@ -125,6 +125,13 @@
             (mu/dissoc init k))
           schema s-keys))
 
+(defn dissoc-qualified-schema
+  [schema ns & s-keys]
+  (let [q-keys (map #(keyword (name ns) (name %)) s-keys)]
+    (reduce (fn [init k]
+              (mu/dissoc init k))
+            schema q-keys)))
+
 (>defn str->int
   [int-str]
   [string? => int?]

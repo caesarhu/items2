@@ -47,7 +47,7 @@
     [:item-list/subkind {:optional true} [:maybe string?]]],
    :items
    [:map
-    [:items/carry string?]
+    [:items/carry {:optional true} [:maybe string?]]
     [:items/check-line {:optional true} [:maybe string?]]
     [:items/check-sign {:optional true} [:maybe string?]]
     [:items/check-time local-date-time]
@@ -60,7 +60,7 @@
     [:items/passenger-id {:optional true} [:maybe string?]]
     [:items/passenger-sign {:optional true} [:maybe string?]]
     [:items/police string?]
-    [:items/process string?]
+    [:items/process {:optional true} [:maybe string?]]
     [:items/subunit {:optional true} [:maybe string?]]
     [:items/trader-sign {:optional true} [:maybe string?]]
     [:items/unit string?]],
@@ -69,6 +69,6 @@
     [:last-time/fail integer?]
     [:last-time/file-time local-date-time]
     [:last-time/id pos-int?]
-    [:last-time/success integer?]
-    [:last-time/total integer?]]})
+    [:last-time/success integer?
+      [:last-time/total integer?]]]})
 
