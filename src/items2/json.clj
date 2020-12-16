@@ -18,11 +18,6 @@
             [taoensso.timbre :as timbre]
             [malli.error :as me]))
 
-(>defn ->int
-  [s]
-  [string? => int?]
-  (Integer/parseInt s))
-
 (>defn parse-unit
   [s]
   [string? => map?]
@@ -43,9 +38,9 @@
   [string? => map?]
   (let [[kind piece people] (string/split s #"-")
         people-count (-> (re-find #"\d+" people)
-                         ->int)
+                         utils/str->int)
         piece-count (-> (re-find #"\d+" piece)
-                        ->int)
+                        utils/str->int)
         result {:項目人數檔/種類 kind :項目人數檔/件數 piece-count :項目人數檔/人數 people-count}]
     (utils/translate-map result @config/meta-dict)))
 
@@ -56,7 +51,7 @@
          (let [k (key entry)
                v (val entry)
                result {:所有項目檔/項目 k
-                       :所有項目檔/數量 (->int v)}]
+                       :所有項目檔/數量 (utils/str->int v)}]
            (utils/translate-map result @config/meta-dict)))
        m))
 
@@ -127,15 +122,13 @@
    [:items/police string?]
    [:items/memo {:optional true} [:maybe string?]]])
 
-(defn json-validate
-  [{:keys [all-list item-list item-people] :as json}]
-  (utils/validate-throw parsed-item-schema json))
-
 (>defn json-parser
   [file-name]
-  [string? => map?]
+  [[:or string? [:fn #(fs/file? %)]] => map?]
   (ex/try+
-    (let [file (fs/file file-name)
+    (let [file (if (fs/file? file-name)
+                 file-name
+                 (fs/file file-name))
           json (m/decode item-json (json/read-value file) json-transformer)
           {:keys [日期 時間 勤務單位]} json
           datetime (jt/local-date-time (string/join "T" [日期 時間]))
@@ -145,7 +138,7 @@
                       (medley/map-keys #(keyword "危安物品檔" (name %)))
                       (medley/map-keys utils/mata-translate)
                       (medley/map-keys utils/json-translate))]
-      (json-validate result))
+      (utils/validate-throw parsed-item-schema result))
     (catch ::ex/incorrect data
       (timbre/log :error ::json-parser data)
       (throw (ex/ex-info (:message data)

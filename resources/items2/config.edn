@@ -17,6 +17,10 @@
                   :危安物品檔/項目人數 :item-people
                   :危安物品檔/項目清單 :item-list}
 
+ :json-file-path
+ #profile {:dev "~/sftp/upload/"
+           :default "/home/item/upload/"}
+
  :bug-unit {"臺中局" "臺中所"
             "花蓮局" "花蓮所"}
 

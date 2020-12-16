@@ -69,3 +69,7 @@
 (def bug-unit-dict
   (redelay/state
     :start [(:bug-unit @config) {}]))
+
+(def json-file-path
+  (redelay/state
+    (:json-file-path @config)))

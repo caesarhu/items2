@@ -1,17 +1,28 @@
 (ns items2.utils
   (:require [aave.core :refer [>defn >defn-]]
+            [items2.config :as config]
             [clojure.core :as c]
+            [datoteka.core :as fs]
             [items2.config :as config]
             [com.rpl.specter :as sp]
             [hodur-translate.core :as hodur]
             [medley.core :as medley]
             [java-time :as jt]
+            [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]
             [malli.core :as m]
             [malli.util :as mu]
             [malli.error :as me]
             [taoensso.timbre :as timbre]
             [exoscale.ex :as ex]
             [clojure.string :as string]))
+
+(>defn day-between?
+  [start-date end-date day]
+  [local-date local-date local-date => boolean?]
+  (let [start (jt/min start-date end-date)
+        end (jt/max start-date end-date)]
+    (not (or (jt/before? day start)
+             (jt/after? day end)))))
 
 (defn ex-cause-and-msg
   [throwable]
@@ -90,8 +101,9 @@
          mapper (fn [[k :as e]] (if (accept k) (c/update e 0 qualify) e))]
      (mu/transform-entries ?schema #(map mapper %) options))))
 
-(defn file-time
+(>defn file-time
   [file]
+  [[:fn #(fs/file? %)] => [:fn #(jt/local-date-time? %)]]
   (-> (.lastModified file)
       jt/instant
       jt/fixed-clock
@@ -112,3 +124,51 @@
   (reduce (fn [init k]
             (mu/dissoc init k))
           schema s-keys))
+
+(>defn str->int
+  [int-str]
+  [string? => int?]
+  (Long/parseLong int-str))
+
+(defn partial-right
+  "Takes a function f and fewer than the normal arguments to f, and
+ returns a fn that takes a variable number of additional args. When
+ called, the returned function calls f with additional args + args."
+  ([f] f)
+  ([f arg1]
+   (fn [& args] (apply f (concat args [arg1]))))
+  ([f arg1 arg2]
+   (fn [& args] (apply f (concat args [arg1 arg2]))))
+  ([f arg1 arg2 arg3]
+   (fn [& args] (apply f (concat args [arg1 arg2 arg3]))))
+  ([f arg1 arg2 arg3 & more]
+   (fn [& args] (apply f (concat args (concat [arg1 arg2 arg3] more))))))
+
+(defn json-file
+  [file-path]
+  (when (and (fs/exists? file-path)
+             (fs/readable? file-path)
+             (fs/regular-file? file-path))
+    (let [j-file (fs/file file-path)]
+      (when (< 0 (.length j-file))
+        j-file))))
+
+(defn json-files
+  ([max-time path]
+   (let [normal-path (fs/normalize path)]
+     (if (and (fs/exists? normal-path)
+              (fs/directory? normal-path)
+              (fs/readable? normal-path))
+       (let [result (->> (fs/list-dir normal-path "*.json")
+                         (map json-file)
+                         (filter some?))]
+         (if (jt/local-date-time? max-time)
+           (filter #(jt/after? (file-time %) max-time) result)
+           result))
+       (throw (ex/ex-info (str path ": json directory not available!")
+                          ::ex/unavailable
+                          {:path path})))))
+  ([max-time]
+   (json-files max-time @config/json-file-path))
+  ([]
+   (json-files nil @config/json-file-path)))

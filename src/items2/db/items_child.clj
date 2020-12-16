@@ -55,7 +55,8 @@
    (let [[table values] child
          sql-map (-> (sqlh/insert-into table)
                      (sqlh/values values))]
-     (db/honey! db sql-map {})))
+     (when (not-empty values)
+       (db/honey! db sql-map {}))))
   ([child]
    [[:tuple keyword? [:sequential [:map-of keyword? any?]]] => any?]
    (insert-items-child! @db/sys-db child)))

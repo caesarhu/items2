@@ -1,5 +1,6 @@
 (ns items2.db.items
   (:require [items2.config :as config]
+            [exoscale.ex :as ex]
             [items2.db.core :as db]
             [aave.core :refer [>defn >defn-]]
             [honeysql.core :as sql]
@@ -11,7 +12,8 @@
             [items2.utils :as utils]
             [taoensso.timbre :as timbre]
             [items2.items-malli :as im]
-            [items2.db.items-child :as child]))
+            [items2.db.items-child :as child]
+            [datoteka.core :as fs]))
 
 (>defn upsert-item!
   ([db item]
@@ -40,3 +42,16 @@
   ([item]
    [j/parsed-item-schema => map?]
    (upsert-item-and-children! @db/sys-db item)))
+
+(>defn import-item-files!
+  ([db json-files]
+   [db/malli-db [:sequential [:fn #(fs/file? %)]] => any?]
+   (let [import-fn (fn [json-file]
+                     (->> json-file
+                          j/json-parser
+                          (upsert-item-and-children! db)))]
+     (dorun
+       (map import-fn json-files))))
+  ([json-files]
+   [[:sequential [:fn #(fs/file? %)]]  => any?]
+   (import-item-files! @db/sys-db json-files)))
