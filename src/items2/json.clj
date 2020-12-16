@@ -138,6 +138,11 @@
                       (medley/map-keys #(keyword "危安物品檔" (name %)))
                       (medley/map-keys utils/mata-translate)
                       (medley/map-keys utils/json-translate))]
+      (when-not (m/validate parsed-item-schema result)
+        (timbre/log :error ::json-parser {:explain
+                                          (-> (m/explain parsed-item-schema parsed-item-schema)
+                                              me/humanize)
+                                          :item result}))
       (utils/validate-throw parsed-item-schema result))
     (catch ::ex/incorrect data
       (timbre/log :error ::json-parser data)

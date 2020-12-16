@@ -1,5 +1,6 @@
 (ns items2.db.items-child
   (:require [items2.db.core :as db]
+            [exoscale.ex :as ex]
             [aave.core :refer [>defn >defn-]]
             [clojure.spec.alpha :as s]
             [honeysql.core :as sql]
@@ -52,11 +53,22 @@
 (>defn insert-items-child!
   ([db child]
    [db/malli-db [:tuple keyword? [:sequential [:map-of keyword? any?]]] => any?]
-   (let [[table values] child
-         sql-map (-> (sqlh/insert-into table)
-                     (sqlh/values values))]
-     (when (not-empty values)
-       (db/honey! db sql-map {}))))
+   (ex/try+
+     (let [[table values] child
+           sql-map (-> (sqlh/insert-into table)
+                       (sqlh/values values))]
+       (when (not-empty values)
+         (db/honey! db sql-map {})))
+     (catch Throwable e
+       (timbre/log :error
+                   ::insert-items-child!
+                   (utils/ex-cause-and-msg e)
+                   {:child child
+                    :from ::insert-items-child!})
+       (throw (ex/ex-info (utils/ex-cause-and-msg e)
+                          ::ex/fault
+                          {:from ::insert-items-child!}
+                          e)))))
   ([child]
    [[:tuple keyword? [:sequential [:map-of keyword? any?]]] => any?]
    (insert-items-child! @db/sys-db child)))

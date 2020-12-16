@@ -71,7 +71,7 @@
   (set! s/*explain-out* expound/printer)
   (stest/instrument))
 
-(instrument)
+;(instrument)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -33,12 +33,23 @@
 (>defn upsert-item-and-children!
   ([db item]
    [db/malli-db j/parsed-item-schema => map?]
-   (when-let [upserted (upsert-item! db item)]
-     (let [tables (:items-child @config/config)
-           children (child/merge-items-id item upserted tables)]
-       (child/delete-table-by-items-id! db (child/find-items-id upserted) tables)
-       (mapv child/insert-items-child! children)
-       upserted)))
+   (ex/try+
+     (when-let [upserted (upsert-item! db item)]
+       (let [tables (:items-child @config/config)
+             children (child/merge-items-id item upserted tables)]
+         (child/delete-table-by-items-id! db (child/find-items-id upserted) tables)
+         (mapv child/insert-items-child! children)
+         upserted))
+     (catch Throwable e
+       (timbre/log :error
+                   ::upsert-item-and-children!
+                   (utils/ex-cause-and-msg e)
+                   {:item item
+                    :from ::upsert-item-and-children!})
+       (throw (ex/ex-info (utils/ex-cause-and-msg e)
+                          ::ex/fault
+                          {:from ::upsert-item-and-children!}
+                          e)))))
   ([item]
    [j/parsed-item-schema => map?]
    (upsert-item-and-children! @db/sys-db item)))
@@ -55,3 +66,10 @@
   ([json-files]
    [[:sequential [:fn #(fs/file? %)]]  => any?]
    (import-item-files! @db/sys-db json-files)))
+
+(defn max-file-time
+  ([db]
+   (-> (db/honey-one! db (sql/build :select :%max.file_time :from :items) {})
+       :max))
+  ([]
+   (max-file-time @db/sys-db)))
