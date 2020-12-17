@@ -146,22 +146,6 @@
   ^{:type String
     :translate/chinese "載具ip"} ip]
 
- ^{:translate/chinese "檔案最後時間檔"}
- last-time
- [^{:type Integer
-    :postgres.column/identity-always true
-    :postgres.column/primary-key true
-    :spec/override clojure.core/pos-int?
-    :translate/chinese "檔案最後時間檔id"} id
-  ^{:type DateTime
-    :translate/chinese "最後時間"} file-time
-  ^{:type Integer
-    :translate/chinese "全部處理紀錄"} total
-  ^{:type Integer
-    :translate/chinese "處理成功紀錄"} success
-  ^{:type Integer
-    :translate/chinese "處理失敗紀錄"} fail]
-
  ^{:translate/chinese "郵件列表檔"}
  mail-list
  [^{:type Integer
