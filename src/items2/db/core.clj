@@ -35,7 +35,9 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 
 (s/def ::db-spec
   (s/or :db-spec ::spec/db-spec
-        :next-jdbc-opts #(instance? next.jdbc.default_options.DefaultOptions %)))
+        :next-jdbc-opts #(instance? next.jdbc.default_options.DefaultOptions %)
+        :pg-connection #(instance? org.postgresql.jdbc.PgConnection %)
+        :hikari-cp #(instance? com.zaxxer.hikari.pool.HikariProxyConnection %)))
 
 (def malli-db
   [:fn #(s/valid? ::db-spec %)])
