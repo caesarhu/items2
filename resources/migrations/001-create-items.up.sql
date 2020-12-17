@@ -1,7 +1,7 @@
 CREATE TABLE items (
-  carry text,
+  carry text NOT NULL,
   check_line text,
-  check_sign text,
+  check_sign text NOT NULL,
   check_time timestamp NOT NULL,
   file text NOT NULL UNIQUE,
   file_time timestamp NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE items (
   passenger_id text,
   passenger_sign text,
   police text NOT NULL,
-  process text,
+  process text NOT NULL,
   subunit text,
   trader_sign text,
   unit text NOT NULL

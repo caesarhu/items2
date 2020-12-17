@@ -13,7 +13,8 @@
             [taoensso.timbre :as timbre]
             [items2.items-malli :as im]
             [items2.db.items-child :as child]
-            [datoteka.core :as fs]))
+            [datoteka.core :as fs]
+            [java-time :as jt]))
 
 (>defn upsert-item!
   ([db item]
@@ -42,28 +43,43 @@
                    ::upsert-item-and-children!
                    (utils/ex-cause-and-msg e)
                    {:item item-and-children
-                    :from ::upsert-item-and-children!
-                    :info "發生未知錯誤，忽略錯誤繼續執行!"}))))
+                    :from ::upsert-item-and-children!})
+       (throw (ex/ex-info (utils/ex-cause-and-msg e)
+                          ::ex/fault
+                          {:from ::upsert-item-and-children!}
+                          e)))))
   ([item-and-children]
    [j/parsed-item-schema => [:or map? nil?]]
    (upsert-item-and-children! @db/sys-db item-and-children)))
 
+(>defn import-item-file!
+  ([db json-file]
+   [db/malli-db [:or string? [:fn #(fs/file? %)]] => [:or map? nil?]]
+   (ex/try+
+     (->> json-file
+          j/json-parser
+          (upsert-item-and-children! db))
+     (catch Throwable e
+       (timbre/log :error
+                   ::import-item-file!
+                   (utils/ex-cause-and-msg e)
+                   {:json-file json-file
+                    :from ::import-item-file!
+                    :info "發生錯誤，忽略錯誤繼續執行!"})))))
+
 (>defn import-item-files!
   ([db json-files]
-   [db/malli-db [:sequential [:fn #(fs/file? %)]] => any?]
-   (let [import-fn (fn [json-file]
-                     (->> json-file
-                          j/json-parser
-                          (upsert-item-and-children! db)))]
-     (dorun
-       (map import-fn json-files))))
+   [db/malli-db [:sequential any?] => nil?]
+   (dorun
+     (map #(import-item-file! db %) json-files)))
   ([json-files]
-   [[:sequential [:fn #(fs/file? %)]]  => any?]
+   [[:sequential any?]  => nil?]
    (import-item-files! @db/sys-db json-files)))
 
 (defn max-file-time
   ([db]
-   (-> (db/honey-one! db (sql/build :select :%max.file_time :from :items) {})
-       :max))
+   (or (-> (db/honey-one! db (sql/build :select :%max.file_time :from :items) {})
+           :max)
+       (jt/local-date-time 1 1 1)))
   ([]
    (max-file-time @db/sys-db)))

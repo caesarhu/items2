@@ -14,15 +14,6 @@
             [taoensso.timbre :as timbre]
             [medley.core :as medley]))
 
-(def all-list-schema
-  (utils/optional-id-schema (:all-list im/items-malli)))
-
-(def item-people-schema
-  (utils/optional-id-schema (:item-people im/items-malli)))
-
-(def item-list-schema
-  (utils/optional-id-schema (:item-list im/items-malli)))
-
 (>defn delete-table-by-items-id!
   ([db items-id tables]
    [db/malli-db pos-int? [:sequential keyword?] => any?]
