@@ -1,5 +1,6 @@
 (ns items2.db.items-child
   (:require [items2.db.core :as db]
+            [items2.config :as config]
             [exoscale.ex :as ex]
             [aave.core :refer [>defn >defn-]]
             [clojure.spec.alpha :as s]
@@ -23,7 +24,7 @@
      (mapv #(db/honey! db % {}) sql-maps)))
   ([items-id tables]
    [pos-int? [:sequential keyword?] => any?]
-   (delete-table-by-items-id! @db/sys-db items-id tables)))
+   (delete-table-by-items-id! @config/db items-id tables)))
 
 (>defn find-items-id
   [upserted-item]
@@ -62,5 +63,5 @@
                           e)))))
   ([child]
    [coll? => any?]
-   (insert-items-child! @db/sys-db child)))
+   (insert-items-child! @config/db child)))
 

@@ -44,25 +44,20 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 (def malli-db-opts
   [:fn #(s/valid? ::spec/opts-map %)])
 
-(def sys-db
-  (redelay/state
-    (let [db (jdbc/get-datasource @config/db)]
-      (jdbc/with-options db auto-opts))))
-
 (defn db-run
   [f & args]
-  (apply f @sys-db args))
+  (apply f @config/db args))
 
 (>defn honey!
   ([db sql-map opts]
    [malli-db map? malli-db-opts => any?]
-   (jdbc/execute! db (sql/format sql-map) opts))
+   (jdbc/execute! db (sql/format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
    [map? malli-db-opts => any?]
-   (honey! @sys-db sql-map opts))
+   (honey! @config/db sql-map opts))
   ([sql-map]
    [map? => any?]
-   (honey! @sys-db sql-map {})))
+   (honey! @config/db sql-map {})))
 
 (comment
   (s/fdef honey!
@@ -73,13 +68,13 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 (>defn honey-one!
   ([db sql-map opts]
    [malli-db map? malli-db-opts => any?]
-   (jdbc/execute-one! db (sql/format sql-map) opts))
+   (jdbc/execute-one! db (sql/format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
    [map? malli-db-opts => any?]
-   (honey-one! @sys-db sql-map opts))
+   (honey-one! @config/db sql-map opts))
   ([sql-map]
    [map? => any?]
-   (honey-one! @sys-db sql-map {})))
+   (honey-one! @config/db sql-map {})))
 
 (comment
   (s/fdef honey-one!
