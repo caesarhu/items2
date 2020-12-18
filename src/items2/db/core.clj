@@ -2,6 +2,7 @@
   (:require [next.jdbc.date-time :refer [read-as-local]]
             [items2.config :as config]
             [aave.core :refer [>defn >defn-]]
+            [hikari-cp.core :as hikari]
             [redelay.core :as redelay]
             [clojure.spec.alpha :as s]
             [next.jdbc :as jdbc]
@@ -44,9 +45,14 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 (def malli-db-opts
   [:fn #(s/valid? ::spec/opts-map %)])
 
-(defn db-run
-  [f & args]
-  (apply f @config/db args))
+;;; database datasource
+
+(def sys-db
+  (redelay/state :start
+                 (hikari/make-datasource (:hikari-cp @config/config))
+
+                 :stop
+                 (hikari/close-datasource this)))
 
 (>defn honey!
   ([db sql-map opts]
@@ -54,10 +60,10 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
    (jdbc/execute! db (sql/format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
    [map? malli-db-opts => any?]
-   (honey! @config/db sql-map opts))
+   (honey! @sys-db sql-map opts))
   ([sql-map]
    [map? => any?]
-   (honey! @config/db sql-map {})))
+   (honey! @sys-db sql-map {})))
 
 (comment
   (s/fdef honey!
@@ -71,10 +77,10 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
    (jdbc/execute-one! db (sql/format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
    [map? malli-db-opts => any?]
-   (honey-one! @config/db sql-map opts))
+   (honey-one! @sys-db sql-map opts))
   ([sql-map]
    [map? => any?]
-   (honey-one! @config/db sql-map {})))
+   (honey-one! @sys-db sql-map {})))
 
 (comment
   (s/fdef honey-one!

@@ -26,10 +26,10 @@
        (db/honey-one! db sql-map opts))))
   ([item opts]
    [j/item-schema db/malli-db-opts => map?]
-   (upsert-item! @config/db item opts))
+   (upsert-item! @db/sys-db item opts))
   ([item]
    [j/item-schema => map?]
-   (upsert-item! @config/db item {})))
+   (upsert-item! @db/sys-db item {})))
 
 (>defn upsert-item-and-children!
   ([db item-and-children]
@@ -43,7 +43,7 @@
          upserted))))
   ([item-and-children]
    [j/parsed-item-schema => map?]
-   (upsert-item-and-children! @config/db item-and-children)))
+   (upsert-item-and-children! @db/sys-db item-and-children)))
 
 (def string-or-file
   [:or string? [:fn #(fs/file? %)]])
@@ -63,7 +63,7 @@
                     :info "發生錯誤，忽略錯誤繼續執行!"}))))
   ([json-file]
    [string-or-file => any?]
-   (import-item-file! @config/db json-file)))
+   (import-item-file! @db/sys-db json-file)))
 
 (>defn import-item-files!
   ([db json-files]
@@ -72,7 +72,7 @@
      (map #(import-item-file! db %) json-files)))
   ([json-files]
    [[:sequential string-or-file]  => nil?]
-   (import-item-files! @config/db json-files)))
+   (import-item-files! @db/sys-db json-files)))
 
 (defn max-file-time
   ([db]
@@ -80,4 +80,14 @@
            :max)
        (jt/local-date-time 1 1 1)))
   ([]
-   (max-file-time @config/db)))
+   (max-file-time @db/sys-db)))
+
+(defn daily-import!
+  ([db path]
+   (->> path
+        (utils/json-files (max-file-time db))
+        (import-item-files! db)))
+  ([path]
+   (daily-import! @db/sys-db path))
+  ([]
+   (daily-import! @db/sys-db (:json-file-path @config/config))))

@@ -24,7 +24,7 @@
      (mapv #(db/honey! db % {}) sql-maps)))
   ([items-id tables]
    [pos-int? [:sequential keyword?] => any?]
-   (delete-table-by-items-id! @config/db items-id tables)))
+   (delete-table-by-items-id! @db/sys-db items-id tables)))
 
 (>defn find-items-id
   [upserted-item]
@@ -63,5 +63,5 @@
                           e)))))
   ([child]
    [coll? => any?]
-   (insert-items-child! @config/db child)))
+   (insert-items-child! @db/sys-db child)))
 

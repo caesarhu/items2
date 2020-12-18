@@ -7,8 +7,7 @@
             [taoensso.timbre.appenders.3rd-party.rolling :as rolling]
             [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
             [hodur-translate.core :as hodur]
-            [redelay.core :as redelay]
-            [hikari-cp.core :as hikari]))
+            [redelay.core :as redelay]))
 
 (defn read-edn-config
   ([profile]
@@ -19,15 +18,6 @@
 (def config
   (redelay/state
     :start (read-edn-config)))
-
-;;; database datasource
-
-(def db
-  (redelay/state :start
-                 (hikari/make-datasource (:hikari-cp @config))
-
-                 :stop
-                 (hikari/close-datasource this)))
 
 ;;; timbre
 
