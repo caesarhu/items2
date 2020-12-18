@@ -57,7 +57,7 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 (>defn honey!
   ([db sql-map opts]
    [malli-db map? malli-db-opts => any?]
-   (jdbc/execute! db (sql/format sql-map) (merge auto-opts opts)))
+   (jdbc/execute! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
   ([sql-map opts]
    [map? malli-db-opts => any?]
    (honey! @sys-db sql-map opts))
@@ -67,7 +67,7 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 
 (defn honey
   ([db sql-map opts]
-   (jdbc/execute! db (sql/format sql-map) (merge auto-opts opts)))
+   (jdbc/execute! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
   ([sql-map opts]
    (honey @sys-db sql-map opts))
   ([sql-map]
@@ -76,7 +76,7 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 (>defn honey-one!
   ([db sql-map opts]
    [malli-db map? malli-db-opts => any?]
-   (jdbc/execute-one! db (sql/format sql-map) (merge auto-opts opts)))
+   (jdbc/execute-one! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
   ([sql-map opts]
    [map? malli-db-opts => any?]
    (honey-one! @sys-db sql-map opts))
@@ -86,7 +86,7 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 
 (defn honey-one
   ([db sql-map opts]
-   (jdbc/execute-one! db (sql/format sql-map) (merge auto-opts opts)))
+   (jdbc/execute-one! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
   ([sql-map opts]
    (honey-one @sys-db sql-map opts))
   ([sql-map]
