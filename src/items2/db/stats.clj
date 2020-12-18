@@ -62,7 +62,7 @@
                      (sqlh/where [:and
                                   [:>= :items/check-time start-date]
                                   [:< :items/check-time end-date]])
-                     (sqlh/group (sql/call :rollup :unit :subunit  :police :kind :subkind)))]
+                     (sqlh/group (sql/call :rollup :kind :subkind :unit :subunit :police)))]
      (tap> (sql/format sql-map :namespace-as-table? true))
      (db/honey db sql-map {})))
   ([period]
