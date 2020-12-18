@@ -66,5 +66,5 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def period {:start-date (jt/local-date 2020 11 1)
-             :end-date (jt/local-date 2020 11 1)})
+(def period {:start-date (jt/local-date 2020 11 24)
+             :end-date (jt/local-date 2020 11 24)})
