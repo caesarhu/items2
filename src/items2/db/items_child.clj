@@ -1,6 +1,5 @@
 (ns items2.db.items-child
   (:require [items2.db.core :as db]
-            [items2.config :as config]
             [exoscale.ex :as ex]
             [aave.core :refer [>defn >defn-]]
             [clojure.spec.alpha :as s]

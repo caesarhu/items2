@@ -1,9 +1,7 @@
 (ns dev
   (:require [fipp.edn :refer [pprint]]
             [clojure.spec.alpha :as s]
-            [exoscale.ex :as ex]
             [datoteka.core :as fs]
-            [jsonista.core :as json]
             [clojure.java.io :as io]
             [expound.alpha :as expound]
             [orchestra.spec.test :as stest]
@@ -13,21 +11,13 @@
             [hodur-translate.core :as hodur]
             [items2.utils :as utils]
             [clojure.string :as string]
-            [next.jdbc :as jdbc]
             [items2.db.core :as db]
-            [items2.db.items :as items]
-            [next.jdbc.specs :as spec]
             [malli.core :as m]
             [malli.util :as mu]
             [malli.transform :as mt]
             [malli.provider :as mp]
-            [honeysql.core :as sql]
-            [honeysql.helpers :as sqlh]
-            [honeysql-postgres.helpers :as psqlh]
-            [items2.json :as j]
-            [items2.items-malli :as im]
-            [items2.db.items-child :as child]
-            [java-time :as jt]))
+            [java-time :as jt]
+            [items2.db.stats :as stats]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))
@@ -76,4 +66,5 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def json-file "dev/resources/data/full.json")
+(def period {:start-date (jt/local-date 2020 11 1)
+             :end-date (jt/local-date 2020 11 1)})

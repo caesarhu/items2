@@ -1,7 +1,7 @@
 (ns items2.db.core
   (:require [next.jdbc.date-time :refer [read-as-local]]
             [items2.config :as config]
-            [aave.core :refer [>defn >defn-]]
+            [aave.core :refer [>defn >defn-] :as aave]
             [hikari-cp.core :as hikari]
             [redelay.core :as redelay]
             [clojure.spec.alpha :as s]
@@ -65,11 +65,13 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
    [map? => any?]
    (honey! @sys-db sql-map {})))
 
-(comment
-  (s/fdef honey!
-    :args (s/cat :db (s/? ::db-spec)
-                 :sql-map map?
-                 :opts (s/? ::spec/opts-map))))
+(defn honey
+  ([db sql-map opts]
+   (jdbc/execute! db (sql/format sql-map) (merge auto-opts opts)))
+  ([sql-map opts]
+   (honey @sys-db sql-map opts))
+  ([sql-map]
+   (honey @sys-db sql-map {})))
 
 (>defn honey-one!
   ([db sql-map opts]
@@ -82,11 +84,13 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
    [map? => any?]
    (honey-one! @sys-db sql-map {})))
 
-(comment
-  (s/fdef honey-one!
-    :args (s/cat :db (s/? ::db-spec)
-                 :sql-map map?
-                 :opts (s/? ::spec/opts-map))))
+(defn honey-one
+  ([db sql-map opts]
+   (jdbc/execute-one! db (sql/format sql-map) (merge auto-opts opts)))
+  ([sql-map opts]
+   (honey-one @sys-db sql-map opts))
+  ([sql-map]
+   (honey-one @sys-db sql-map {})))
 
 (defn upsert-one
   [table row & conflicts]
