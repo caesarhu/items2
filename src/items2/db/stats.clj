@@ -5,7 +5,8 @@
             [honeysql.core :as sql]
             [honeysql.helpers :as sqlh]
             [honeysql-postgres.helpers :as psqlh]
-            [java-time :as jt]))
+            [java-time :as jt]
+            [items2.utils :as utils]))
 
 (def malli-period
   [:map
@@ -38,7 +39,8 @@
    [db/malli-db malli-period => any?]
    (let [start-date (:start-date period)
          end-date (jt/plus (:end-date period) (jt/days 1))
-         sql-map (-> (sql/build :select :items/* :from :items)
+         sql-map (-> (sql/build :select :*
+                                :from :items)
                      (sqlh/merge-select :ilist/項目清單 :people/件數人數 :alist/所有項目數量)
                      (sqlh/left-join [item-list-subquery :ilist] [:= :items/id :ilist/items-id]
                                      [item-people-subquery :people] [:= :items/id :people/items-id]

@@ -21,7 +21,8 @@
             [honeysql.helpers :as sqlh]
             [items2.json :as j]
             [items2.db.items :as items]
-            [items2.db.stats :as stats]))
+            [items2.db.stats :as stats]
+            [items2.csv :as csv]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))
