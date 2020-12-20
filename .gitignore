@@ -13,8 +13,7 @@ pom.xml.asc
 /test-db
 /.idea
 .rebel_readline_history
-*.iml
 /logs
 /.cpcache
 /.rebl
-
+/.idea

@@ -44,22 +44,11 @@
 (>defn insert-items-child!
   ([db child]
    [db/malli-db coll? => any?]
-   (ex/try+
-     (let [[table values] child
-           sql-map (-> (sqlh/insert-into table)
-                       (sqlh/values values))]
-       (when (not-empty values)
-         (db/honey! db sql-map {})))
-     (catch Throwable e
-       (timbre/log :error
-                   ::insert-items-child!
-                   (utils/ex-cause-and-msg e)
-                   {:child child
-                    :from ::insert-items-child!})
-       (throw (ex/ex-info (utils/ex-cause-and-msg e)
-                          ::ex/fault
-                          {:from ::insert-items-child!}
-                          e)))))
+   (let [[table values] child
+         sql-map (-> (sqlh/insert-into table)
+                     (sqlh/values values))]
+     (when (not-empty values)
+       (db/honey! db sql-map {}))))
   ([child]
    [coll? => any?]
    (insert-items-child! @db/sys-db child)))

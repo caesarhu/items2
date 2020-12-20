@@ -56,31 +56,31 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
 
 (>defn honey-format
   [map-or-seq-or-vector]
-  [[:or :map :sequential :vector] => vector?]
+  [coll? => any?]
   (if (map? map-or-seq-or-vector)
     (sql/format map-or-seq-or-vector :namespace-as-table? true)
     (apply sql/format map-or-seq-or-vector)))
 
 (>defn honey!
   ([db sql-map opts]
-   [malli-db [:or :map :sequential :vector] malli-db-opts => any?]
+   [malli-db coll? malli-db-opts => any?]
    (jdbc/execute! db (honey-format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
-   [[:or :map :sequential :vector] malli-db-opts => any?]
+   [coll? malli-db-opts => any?]
    (honey! @sys-db sql-map opts))
   ([sql-map]
-   [[:or :map :sequential :vector] => any?]
+   [coll? => any?]
    (honey! @sys-db sql-map {})))
 
 (>defn honey-one!
   ([db sql-map opts]
-   [malli-db [:or :map :sequential :vector] malli-db-opts => any?]
+   [malli-db coll? malli-db-opts => any?]
    (jdbc/execute-one! db (honey-format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
-   [[:or :map :sequential :vector] malli-db-opts => any?]
+   [coll? malli-db-opts => any?]
    (honey-one! @sys-db sql-map opts))
   ([sql-map]
-   [[:or :map :sequential :vector] => any?]
+   [coll? => any?]
    (honey-one! @sys-db sql-map {})))
 
 (defn upsert-one
