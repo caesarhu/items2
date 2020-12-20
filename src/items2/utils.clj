@@ -16,6 +16,18 @@
             [exoscale.ex :as ex]
             [clojure.string :as string]))
 
+(def key-str-sym?
+  [:or :keyword :string :symbol])
+
+(>defn ns-as-table
+  [k]
+  [any? => any?]
+  (if (keyword? k)
+    (if-let [ns (namespace k)]
+      (keyword (str ns "." (name k)))
+      k)
+    k))
+
 (>defn day-between?
   [start-date end-date day]
   [local-date local-date local-date => boolean?]
@@ -45,17 +57,17 @@
 
 (>defn mata-translate
   [k]
-  [[:or :keyword :string :symbol] => :keyword]
+  [key-str-sym? => :keyword]
   (hodur/dict-translate @config/meta-dict k))
 
 (>defn json-translate
   [k]
-  [[:or :keyword :string :symbol] => :keyword]
+  [key-str-sym? => :keyword]
   (hodur/dict-translate @config/json-dict k))
 
 (>defn bug-unit-translate
   [k]
-  [[:or :keyword :string :symbol] => :string]
+  [key-str-sym? => :string]
   (hodur/dict-translate @config/bug-unit-dict k))
 
 (>defn translate-map

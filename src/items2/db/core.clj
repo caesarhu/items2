@@ -54,43 +54,34 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
                  :stop
                  (hikari/close-datasource this)))
 
+(>defn honey-format
+  [map-or-seq-or-vector]
+  [[:or :map :sequential :vector] => vector?]
+  (if (map? map-or-seq-or-vector)
+    (sql/format map-or-seq-or-vector :namespace-as-table? true)
+    (apply sql/format map-or-seq-or-vector)))
+
 (>defn honey!
   ([db sql-map opts]
-   [malli-db map? malli-db-opts => any?]
-   (jdbc/execute! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
+   [malli-db [:or :map :sequential :vector] malli-db-opts => any?]
+   (jdbc/execute! db (honey-format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
-   [map? malli-db-opts => any?]
+   [[:or :map :sequential :vector] malli-db-opts => any?]
    (honey! @sys-db sql-map opts))
   ([sql-map]
-   [map? => any?]
+   [[:or :map :sequential :vector] => any?]
    (honey! @sys-db sql-map {})))
-
-(defn honey
-  ([db sql-map opts]
-   (jdbc/execute! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
-  ([sql-map opts]
-   (honey @sys-db sql-map opts))
-  ([sql-map]
-   (honey @sys-db sql-map {})))
 
 (>defn honey-one!
   ([db sql-map opts]
-   [malli-db map? malli-db-opts => any?]
-   (jdbc/execute-one! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
+   [malli-db [:or :map :sequential :vector] malli-db-opts => any?]
+   (jdbc/execute-one! db (honey-format sql-map) (merge auto-opts opts)))
   ([sql-map opts]
-   [map? malli-db-opts => any?]
+   [[:or :map :sequential :vector] malli-db-opts => any?]
    (honey-one! @sys-db sql-map opts))
   ([sql-map]
-   [map? => any?]
+   [[:or :map :sequential :vector] => any?]
    (honey-one! @sys-db sql-map {})))
-
-(defn honey-one
-  ([db sql-map opts]
-   (jdbc/execute-one! db (sql/format sql-map :namespace-as-table? true) (merge auto-opts opts)))
-  ([sql-map opts]
-   (honey-one @sys-db sql-map opts))
-  ([sql-map]
-   (honey-one @sys-db sql-map {})))
 
 (defn upsert-one
   [table row & conflicts]

@@ -23,7 +23,7 @@
    (when-let [good-item (when (m/validate j/item-schema item)
                           (m/decode j/item-schema item mt/strip-extra-keys-transformer))]
      (let [sql-map (db/upsert-one :items good-item :file)]
-       (db/honey-one! db sql-map opts))))
+       (db/honey-one! db [sql-map :namespace-as-table? false] opts))))
   ([item opts]
    [j/item-schema db/malli-db-opts => map?]
    (upsert-item! @db/sys-db item opts))

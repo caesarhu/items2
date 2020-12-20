@@ -47,7 +47,7 @@
                                   [:>= :items/check-time start-date]
                                   [:< :items/check-time end-date]])
                      (sqlh/order-by :items/unit :items/subunit :items/police :items/check-time))]
-     (db/honey db sql-map {})))
+     (db/honey! db sql-map {})))
   ([period]
    [malli-period => any?]
    (items-period-record @db/sys-db period)))
@@ -62,9 +62,14 @@
                      (sqlh/where [:and
                                   [:>= :items/check-time start-date]
                                   [:< :items/check-time end-date]])
-                     (sqlh/group (sql/call :rollup :kind :subkind :unit :subunit :police)))]
-     (tap> (sql/format sql-map :namespace-as-table? true))
-     (db/honey db sql-map {})))
+                     (sqlh/group (sql/call :rollup :kind :subkind :unit :subunit :police))
+                     (sqlh/order-by [:items/unit :nulls-first]
+                                    [:items/subunit :nulls-first]
+                                    [:items/police :nulls-first]
+                                    [:item-list/kind :nulls-first]
+                                    [:item-list/subkind :nulls-first]))]
+     (tap> (sql/format sql-map))
+     (db/honey! db sql-map {})))
   ([period]
    [malli-period => any?]
    (stats-period @db/sys-db period)))

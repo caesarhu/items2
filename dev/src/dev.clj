@@ -19,6 +19,7 @@
             [java-time :as jt]
             [honeysql.core :as sql]
             [honeysql.helpers :as sqlh]
+            [items2.db.items :as items]
             [items2.db.stats :as stats]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
@@ -46,11 +47,6 @@
 (defn spit-malli
   [path]
   (hodur/spit-malli-schema path (meta-db) true))
-
-(defn slurp-json
-  [path]
-  (let [file (io/resource (str "data/" path))]
-    (slurp file)))
 
 ;;; expound and Orchestra
 
