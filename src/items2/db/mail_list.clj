@@ -10,12 +10,13 @@
 
 (defn get-mail-list
   ([db]
-   (let [sql-map (-> (sql/build :select [:mail-list/unit :mail-list/subunit :mail-list/email]
-                                :from :mail-list)
-                     (sqlh/order-by [:mail-list/unit :nulls-first]
-                                    [:mail-list/subunit :nulls-first]))]
-     (tap> sql-map)
-     (tap> (sql/format sql-map))
-     (db/honey! db sql-map {})))
+   (let [sql-map (-> (sqlh/select :mail-list/unit :mail-list/subunit :mail-list/email)
+                     (sqlh/from :mail-list)
+                     (sqlh/order-by :mail-list/unit
+                                    :mail-list/subunit
+                                    :mail-list/email))]
+     (->> (db/honey! db sql-map {})
+          (map utils/unqualify-map)
+          (partition-by #(str (:unit %) (:subunit %))))))
   ([]
    (get-mail-list @db/sys-db)))
