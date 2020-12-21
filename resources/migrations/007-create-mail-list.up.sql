@@ -5,5 +5,6 @@ CREATE TABLE mail_list (
   name text,
   position text,
   subunit text,
-  unit text NOT NULL
+  unit text NOT NULL,
+  whole boolean
 );

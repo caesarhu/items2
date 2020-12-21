@@ -35,21 +35,32 @@
       (sqlh/group :items-id)))
 
 (>defn items-period-detail
-  ([db period]
-   [db/malli-db malli-period => any?]
+  ([db period unit subunit]
+   [db/malli-db malli-period [:or string? nil?] [:or string? nil?] => any?]
    (let [start-date (:start-date period)
          end-date (jt/plus (:end-date period) (jt/days 1))
-         sql-map (-> (sql/build :select :*
-                                :from :items)
-                     (sqlh/merge-select :ilist/項目清單 :people/件數人數 :alist/所有項目數量)
-                     (sqlh/left-join [item-list-subquery :ilist] [:= :items/id :ilist/items-id]
-                                     [item-people-subquery :people] [:= :items/id :people/items-id]
-                                     [all-list-subquery :alist] [:= :items/id :alist/items-id])
-                     (sqlh/where [:and
-                                  [:>= :items/check-time start-date]
-                                  [:< :items/check-time end-date]])
-                     (sqlh/order-by :items/unit :items/subunit :items/police :items/check-time))]
+         sql-map-base (-> (sql/build :select :*
+                                     :from :items)
+                          (sqlh/merge-select :ilist/項目清單 :people/件數人數 :alist/所有項目數量)
+                          (sqlh/left-join [item-list-subquery :ilist] [:= :items/id :ilist/items-id]
+                                          [item-people-subquery :people] [:= :items/id :people/items-id]
+                                          [all-list-subquery :alist] [:= :items/id :alist/items-id])
+                          (sqlh/where [:and
+                                       [:>= :items/check-time start-date]
+                                       [:< :items/check-time end-date]])
+                          (sqlh/order-by :items/unit :items/subunit :items/police :items/check-time))
+         sql-map (cond-> sql-map-base
+                   unit (sqlh/merge-where [:= :items/unit unit])
+                   subunit (sqlh/merge-where [:= :items/subunit subunit]))]
+     (tap> sql-map)
+     (tap> (sql/format sql-map))
      (db/honey! db sql-map {})))
+  ([db period unit]
+   [db/malli-db malli-period [:or string? nil?] => any?]
+   (items-period-detail db period unit nil))
+  ([db period]
+   [db/malli-db malli-period => any?]
+   (items-period-detail db period nil nil))
   ([period]
    [malli-period => any?]
    (items-period-detail @db/sys-db period)))

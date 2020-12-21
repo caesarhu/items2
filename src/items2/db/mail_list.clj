@@ -10,7 +10,8 @@
 
 (defn get-mail-list
   ([db]
-   (let [sql-map (-> (sqlh/select :mail-list/unit :mail-list/subunit :mail-list/email)
+   (let [sql-map (-> (sqlh/select :mail-list/unit :mail-list/subunit
+                                  :mail-list/email :mail-list/whole)
                      (sqlh/from :mail-list)
                      (sqlh/order-by :mail-list/unit
                                     :mail-list/subunit

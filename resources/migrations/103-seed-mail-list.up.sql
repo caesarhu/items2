@@ -1,8 +1,8 @@
-INSERT INTO mail_list (unit, position, name, email)
-VALUES ('勤指中心', '警務正', '胡培舜', 'caesarhu@dns.apb.gov.tw');
+INSERT INTO mail_list (unit, position, name, email, whole)
+VALUES ('勤指中心', '警務正', '胡培舜', 'caesarhu@dns.apb.gov.tw', true);
 --;;
-INSERT INTO mail_list (unit, position, name, email)
-VALUES ('航空保安科', '警務正', '陳啟文', 'bp691154@dns.apb.gov.tw');
+INSERT INTO mail_list (unit, position, name, email, whole)
+VALUES ('航空保安科', '警務正', '陳啟文', 'bp691154@dns.apb.gov.tw', true);
 --;;
 INSERT INTO mail_list (unit, position, name, email)
 VALUES ('保安大隊', '巡官', '黃愛春', 'ai631024@dns.apb.gov.tw');

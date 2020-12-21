@@ -166,6 +166,9 @@
     :translate/chinese "姓名"} name
   ^{:type String
     :translate/chinese "電子郵件"} email
+  ^{:type Boolean
+    :optional true
+    :translate/chinese "全局?"} whole
   ^{:type String
     :optional true
     :translate/chinese "備註"} memo]]
