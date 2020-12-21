@@ -53,5 +53,5 @@
         cjsauer/disqualified {:mvn/version "0.1.0"}
         functionalbytes/redelay {:mvn/version "1.1.0"}
         nrepl/nrepl {:mvn/version "0.8.3"}
-        clj-bom {:mvn/version "0.1.2"}
+        clj-bom/clj-bom {:mvn/version "0.1.2"}
         org.clojure/data.csv {:mvn/version "1.0.0"}}}
