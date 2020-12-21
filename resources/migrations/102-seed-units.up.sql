@@ -79,3 +79,7 @@ INSERT INTO units (unit, subunit) VALUES ('高雄分局', '馬公所');
 INSERT INTO units (unit, subunit) VALUES ('高雄分局', '七美所');
 --;;
 INSERT INTO units (unit, subunit) VALUES ('高雄分局', '望安所');
+--;;
+INSERT INTO units (unit) VALUES ('勤指中心');
+--;;
+INSERT INTO units (unit) VALUES ('航空保安科');

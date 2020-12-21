@@ -121,7 +121,7 @@
         raw-json (->> (dissoc json :日期 :時間 :勤務單位)
                       (merge 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
                       (medley/map-keys #(utils/qualify-key "危安物品檔" %))
-                      (medley/map-keys utils/mata-translate)
+                      (medley/map-keys utils/meta-translate)
                       (medley/map-keys utils/json-translate))
         tables (:items-child @config/config)
         result (merge {:item (apply dissoc raw-json tables)} (select-keys raw-json tables))]

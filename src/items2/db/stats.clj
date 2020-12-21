@@ -79,7 +79,6 @@
                                     [:items/police :nulls-first]
                                     [:item-list/kind :nulls-first]
                                     [:item-list/subkind :nulls-first]))]
-     (tap> (sql/format sql-map))
      (db/honey! db sql-map {})))
   ([period]
    [malli-period => any?]

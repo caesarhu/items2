@@ -15,12 +15,6 @@
     (jt/local-date? field) (jt/format date-format field)
     :else field))
 
-(def detail-fields
-  [:items/unit :items/subunit :items/police :items/check-line :items/check-time
-   :items/file-time :items/flight :items/carry :items/process :items/passenger-id
-   :項目清單 :件數人數 :所有項目數量 :items/memo :items/file :items/check-sign
-   :items/passenger-sign :items/trader-sign :items/ip])
-
 (>defn ->csv-row
   [m kv]
   [map? [:vector keyword?] => seq?]
@@ -34,7 +28,7 @@
   ([map-v kv title?]
    [[:sequential map?] [:vector keyword?] boolean? => seq?]
    (let [title (map (fn [k]
-                      (->> k utils/mata-translate name))
+                      (->> k utils/meta-translate name))
                     kv)
          csv-vec (map #(->csv-row % kv) map-v)]
      (if title?

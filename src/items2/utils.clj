@@ -17,7 +17,7 @@
             [clojure.string :as string]))
 
 (def key-str-sym?
-  [:or :keyword :string :symbol])
+  [:or keyword? string? symbol?])
 
 (>defn ns-as-table
   [k]
@@ -55,7 +55,7 @@
   [:string => :string]
   (string/replace s #"\s+" ""))
 
-(>defn mata-translate
+(>defn meta-translate
   [k]
   [key-str-sym? => :keyword]
   (hodur/dict-translate @config/meta-dict k))
