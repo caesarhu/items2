@@ -34,7 +34,7 @@
                       (sqlh/merge-select (sql/call :concat :all-list/item "-" :all-list/quantity))) :alist2])
       (sqlh/group :items-id)))
 
-(>defn items-period-record
+(>defn items-period-detail
   ([db period]
    [db/malli-db malli-period => any?]
    (let [start-date (:start-date period)
@@ -52,7 +52,7 @@
      (db/honey! db sql-map {})))
   ([period]
    [malli-period => any?]
-   (items-period-record @db/sys-db period)))
+   (items-period-detail @db/sys-db period)))
 
 (>defn stats-period
   ([db period]
@@ -62,9 +62,18 @@
          sql-map (-> (sqlh/select :items/unit :items/subunit :items/police :item-list/kind :item-list/subkind [:%count.item-list.subkind :合計])
                      (sqlh/from :items :item-list)
                      (sqlh/where [:and
+                                  [:= :item-list/items-id :items/id]
                                   [:>= :items/check-time start-date]
                                   [:< :items/check-time end-date]])
-                     (sqlh/group (sql/call :rollup :kind :subkind :unit :subunit :police))
+                     (sqlh/group (sql/call "GROUPING SETS"
+                                           '(:unit :subunit :police :kind :subkind)
+                                           '(:unit :subunit :police :kind)
+                                           '(:unit :subunit :kind :subkind)
+                                           '(:unit :subunit :kind)
+                                           '(:unit :kind :subkind)
+                                           '(:unit :kind)
+                                           '(:kind :subkind)
+                                           '(:kind)))
                      (sqlh/order-by [:items/unit :nulls-first]
                                     [:items/subunit :nulls-first]
                                     [:items/police :nulls-first]
