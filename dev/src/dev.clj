@@ -22,8 +22,10 @@
             [items2.json :as j]
             [items2.db.items :as items]
             [items2.db.stats :as stats]
-            [items2.csv :as csv]
-            [items2.db.mail-list :as mail]))
+            [items2.db.items-csv :as csv]
+            [items2.db.mail-list :as mail]
+            [medley.core :as medley]
+            [items2.csv :as cc]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))
@@ -67,5 +69,5 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def period {:start-date (jt/local-date 2020 11 24)
-             :end-date (jt/local-date 2020 11 24)})
+(def period {:start-date (jt/local-date 2020 12 20)
+             :end-date (jt/local-date 2020 12 20)})

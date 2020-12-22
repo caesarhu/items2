@@ -21,3 +21,7 @@ CREATE TABLE items (
 CREATE INDEX idx_items_by_unit ON items (unit, subunit, police, check_time);
 --;;
 CREATE INDEX idx_items_by_file_time ON items (file_time);
+--;;
+CREATE INDEX idx_items_by_check_time ON items (check_time);
+--;;
+CREATE INDEX idx_items_by_units ON items (unit, subunit);

@@ -52,8 +52,6 @@
          sql-map (cond-> sql-map-base
                    unit (sqlh/merge-where [:= :items/unit unit])
                    subunit (sqlh/merge-where [:= :items/subunit subunit]))]
-     (tap> sql-map)
-     (tap> (sql/format sql-map))
      (db/honey! db sql-map {})))
   ([db period unit]
    [db/malli-db malli-period [:or string? nil?] => any?]
@@ -63,14 +61,19 @@
    (items-period-detail db period nil nil))
   ([period]
    [malli-period => any?]
-   (items-period-detail @db/sys-db period)))
+   (items-period-detail @db/sys-db period nil nil)))
 
-(>defn stats-period
+(>defn items-period-stats
   ([db period]
    [db/malli-db malli-period => any?]
    (let [start-date (:start-date period)
          end-date (jt/plus (:end-date period) (jt/days 1))
-         sql-map (-> (sqlh/select :items/unit :items/subunit :items/police :item-list/kind :item-list/subkind [:%count.item-list.subkind :合計])
+         sql-map (-> (sqlh/select :items/unit :items/subunit
+                                  :items/police
+                                  :item-list/kind :item-list/subkind
+                                  [:%count.item-list.subkind :合計]
+                                  [start-date :開始日期]
+                                  [end-date :結束日期])
                      (sqlh/from :items :item-list)
                      (sqlh/where [:and
                                   [:= :item-list/items-id :items/id]
@@ -90,8 +93,13 @@
                                     [:items/police :nulls-first]
                                     [:item-list/kind :nulls-first]
                                     [:item-list/subkind :nulls-first]))]
-     (db/honey! db sql-map {})))
+     (->> (db/honey! db sql-map {})
+          not-empty
+          (map (fn [m]
+                 (if (nil? (:items/unit m))
+                   (assoc m :items/unit "全局")
+                   m))))))
   ([period]
    [malli-period => any?]
-   (stats-period @db/sys-db period)))
+   (items-period-stats @db/sys-db period)))
 

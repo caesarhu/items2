@@ -18,6 +18,9 @@
                                     :mail-list/email))]
      (->> (db/honey! db sql-map {})
           (map utils/unqualify-map)
-          (partition-by #(str (:unit %) (:subunit %))))))
+          (group-by (fn [m]
+                      (if (:whole m)
+                        "全局"
+                        (str (:unit m) (:subunit m))))))))
   ([]
    (get-mail-list @db/sys-db)))

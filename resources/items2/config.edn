@@ -21,12 +21,17 @@
  #profile {:dev "~/sftp/upload/"
            :default "/home/item/upload/"}
 
- :detail-fields [:items/unit :items/subunit :items/police :items/check-line :items/check-time
-                 :items/file-time :items/flight :items/carry :items/process :items/passenger-id
-                 :項目清單 :件數人數 :所有項目數量 :items/memo :items/file :items/check-sign
-                 :items/passenger-sign :items/trader-sign :items/ip]
- :stat-fields [:start-date :end-date :items/unit :items/subunit :items/police
-               :item-list/kind :item-list/subkind]
+ :csv-path "./csv/"
+
+ :report
+ {:detail {:fields [:items/unit :items/subunit :items/police :items/check-line :items/check-time
+                    :items/file-time :items/flight :items/carry :items/process :items/passenger-id
+                    :項目清單 :件數人數 :所有項目數量 :items/memo :items/file :items/check-sign
+                    :items/passenger-sign :items/trader-sign :items/ip]
+           :name "明細"}
+  :stats {:fields [:開始日期 :結束日期 :items/unit :items/subunit :items/police
+                   :item-list/kind :item-list/subkind :合計]
+          :name "統計"}}
 
  :bug-unit {"臺中局" "臺中所"
             "花蓮局" "花蓮所"}

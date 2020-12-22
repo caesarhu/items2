@@ -6,7 +6,9 @@
 
  ^{:translate/chinese "危安物品檔"
    :postgres.table/index [[:idx-items-by-unit :items :unit :subunit :police :check-time]
-                          [:idx-items-by-file-time :items :file-time]]}
+                          [:idx-items-by-file-time :items :file-time]
+                          [:idx-items-by-check-time :items :check-time]
+                          [:idx-items-by-units :items :unit :subunit]]}
  items
  [^{:type Integer
     :postgres.column/identity-always true
