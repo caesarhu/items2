@@ -1,7 +1,8 @@
 (ns items2.mail
   (:require [items2.config :as config]
             [datoteka.core :as fs]
-            [postal.core :refer [send-message]]))
+            [postal.core :refer [send-message]]
+            [taoensso.timbre :as timbre]))
 
 (defn attach-mail-file [path]
   (if (and (string? path) (fs/regular-file? path))
@@ -11,9 +12,9 @@
        :file-name file-name
        :content-type "text/x-csv; charset=utf-8"
        :content file})
-    (log :error ::attach-mail-file-fail path)))
+    (timbre/log :error ::attach-mail-file-fail path)))
 
-(defn make-mail-data [from to subject content & file-paths]
+(defn make-mail-data [from to subject content file-paths]
   (let [mail-header {:from    from
                      :to      to
                      :subject subject}
@@ -30,7 +31,7 @@
     (try
       (System/setProperty "mail.mime.splitlongparameters" "false")
       ;; 附件中文檔名必須如此設定，才能讓所有mail client正確識別
-      (send-message (mail-config) mail-data)
-      (log :info ::send-items-mail-success to)
+      (send-message (:mail-server @config/config) mail-data)
+      (timbre/log :info ::send-items-mail/success to)
       (catch Exception ex
-        (log :error ::send-items-mail-fail (str to " due to: " (.getMessage ex)))))))
+        (timbre/log :error ::send-items-mail/fail (str to " due to: " (.getMessage ex)))))))
