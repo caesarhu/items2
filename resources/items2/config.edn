@@ -46,6 +46,11 @@
 
  :items-child [:all-list :item-list :item-people]
 
+ :mail-server {:host #or [#env MAIL_HOST "mail.apb.gov.tw"]
+               :port #long #or [#env MAIL_PORT 25]
+               :timeout "5000"
+               :connectiontimeout "5000"}
+
  :components
  {:timbre
   {:start (items2.config/set-timbre-config!
