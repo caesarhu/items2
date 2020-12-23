@@ -1,7 +1,8 @@
 (ns user
-  (:require [nrepl.server :refer [start-server stop-server]]
-            [aave.core :refer [>defn >defn-] :as aave]
-            [aave.config :as aave-config]))
+  (:require
+    [aave.config :as aave-config]
+    [aave.core :refer [>defn >defn-] :as aave]
+    [nrepl.server :refer [start-server stop-server]]))
 
 
 ;;; set aave inpure
@@ -10,8 +11,10 @@
   [opts]
   (aave/set-config! (merge aave-config/default opts)))
 
+
 (set-aave-opts! {:aave.core/enforce-purity false
                  :aave.core/on-purity-fail (fn [])})
+
 
 (defn dev
   "Load and switch to the 'dev' namespace."

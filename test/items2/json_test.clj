@@ -1,16 +1,20 @@
 (ns items2.json-test
-  (:require [clojure.test :refer :all]
-            [items2.json :refer :all]
-            [items2.helpers :refer :all]
-            [java-time :as jt]
-            [malli.core :as m]))
+  (:require
+    [clojure.test :refer :all]
+    [items2.helpers :refer :all]
+    [items2.json :refer :all]
+    [java-time :as jt]
+    [malli.core :as m]))
+
 
 (comment
   (use-fixtures
     :once
     instrument-specs))
 
+
 (def json-file "dev/resources/data/2020-11-24-11-18-20.898-DataStore.json")
+
 
 (def json-test-data
   {:危安物品檔/所有項目數量 '({:all-list/item "石頭", :all-list/quantity 1}
@@ -60,6 +64,7 @@
    :items/police "大強子",
    :items/memo "",
    :危安物品檔/時間 "11:16:42.686"})
+
 
 (deftest json-parser-test
   (testing "test items2.json.json-parser"

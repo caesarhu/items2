@@ -1,17 +1,20 @@
 (ns items2.db.mail
-  (:require [items2.config :as config]
-            [datoteka.core :as fs]
-            [postal.core :refer [send-message]]
-            [taoensso.timbre :as timbre]
-            [java-time :as jt]
-            [items2.db.items-csv :as csv]
-            [items2.db.mail-list :as mail]
-            [items2.db.core :as db]
-            [items2.utils :as utils]
-            [clojure.string :as string]
-            [items2.db.items :as items]))
+  (:require
+    [clojure.string :as string]
+    [datoteka.core :as fs]
+    [items2.config :as config]
+    [items2.db.core :as db]
+    [items2.db.items :as items]
+    [items2.db.items-csv :as csv]
+    [items2.db.mail-list :as mail]
+    [items2.utils :as utils]
+    [java-time :as jt]
+    [postal.core :refer [send-message]]
+    [taoensso.timbre :as timbre]))
 
-(defn attach-mail-file [path]
+
+(defn attach-mail-file
+  [path]
   (if (and (string? path) (fs/regular-file? path))
     (let [file (fs/file path)
           file-name (.getName file)]
@@ -21,7 +24,9 @@
        :content file})
     (timbre/log :error ::attach-mail-file-fail path)))
 
-(defn make-mail-data [from to subject content file-paths]
+
+(defn make-mail-data
+  [from to subject content file-paths]
   (let [mail-header {:from    from
                      :to      to
                      :subject subject}
@@ -31,7 +36,9 @@
         body (into body-base attachments)]
     (assoc mail-header :body body)))
 
-(defn send-items-mail [to subject paths]
+
+(defn send-items-mail
+  [to subject paths]
   (let [from "system@dns.apb.gov.tw"
         content "系統於每日凌晨3時自動寄送前1日危險(安)物品資料，每週二凌晨3時自動寄送前1週(上週二至週一)危險(安)物品資料，請勿直接回信，如有問題請聯絡勤指中心資訊室 736-2222。"
         mail-data (make-mail-data from to subject content paths)]
@@ -43,6 +50,7 @@
                                                    :subject subject})
       (catch Exception ex
         (timbre/log :error ::send-items-mail-fail (str (string/join ", " to) " due to: " (.getMessage ex)))))))
+
 
 (defn send-period-mail
   ([db period csv-dir]
@@ -65,6 +73,7 @@
    (send-period-mail db period (:csv-path @config/config)))
   ([period]
    (send-period-mail @db/sys-db period (:csv-path @config/config))))
+
 
 (defn daily-mail
   ([db csv-dir json-dir]

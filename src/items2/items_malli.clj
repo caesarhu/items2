@@ -1,5 +1,6 @@
 (ns items2.items-malli
-  (:require [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]))
+  (:require
+    [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]))
 
 ;;; auto generate by hodur
 

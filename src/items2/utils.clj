@@ -1,30 +1,34 @@
 (ns items2.utils
-  (:require [aave.core :refer [>defn >defn-]]
-            [items2.config :as config]
-            [clojure.core :as c]
-            [datoteka.core :as fs]
-            [items2.config :as config]
-            [com.rpl.specter :as sp]
-            [hodur-translate.core :as hodur]
-            [medley.core :as medley]
-            [java-time :as jt]
-            [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]
-            [malli.core :as m]
-            [malli.util :as mu]
-            [malli.error :as me]
-            [taoensso.timbre :as timbre]
-            [exoscale.ex :as ex]
-            [clojure.string :as string]))
+  (:require
+    [aave.core :refer [>defn >defn-]]
+    [clojure.core :as c]
+    [clojure.string :as string]
+    [com.rpl.specter :as sp]
+    [datoteka.core :as fs]
+    [exoscale.ex :as ex]
+    [hodur-translate.core :as hodur]
+    [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]
+    [items2.config :as config]
+    [items2.config :as config]
+    [java-time :as jt]
+    [malli.core :as m]
+    [malli.error :as me]
+    [malli.util :as mu]
+    [medley.core :as medley]
+    [taoensso.timbre :as timbre]))
+
 
 (defn yesterday
   []
   {:start-date (jt/minus (jt/local-date) (jt/days 1))
    :end-date (jt/minus (jt/local-date) (jt/days 1))})
 
+
 (defn last-week
   []
   {:start-date (jt/minus (jt/local-date) (jt/days 7))
    :end-date (jt/minus (jt/local-date) (jt/days 1))})
+
 
 (defn last-month
   []
@@ -35,29 +39,34 @@
     {:start-date start-date
      :end-date end-date}))
 
+
 (def key-str-sym?
   [:or keyword? string? symbol?])
 
+
 (>defn ns-as-table
-  [k]
-  [any? => any?]
-  (if (keyword? k)
-    (if-let [ns (namespace k)]
-      (keyword (str ns "." (name k)))
-      k)
-    k))
+       [k]
+       [any? => any?]
+       (if (keyword? k)
+         (if-let [ns (namespace k)]
+           (keyword (str ns "." (name k)))
+           k)
+         k))
+
 
 (>defn day-between?
-  [start-date end-date day]
-  [local-date local-date local-date => boolean?]
-  (let [start (jt/min start-date end-date)
-        end (jt/max start-date end-date)]
-    (not (or (jt/before? day start)
-             (jt/after? day end)))))
+       [start-date end-date day]
+       [local-date local-date local-date => boolean?]
+       (let [start (jt/min start-date end-date)
+             end (jt/max start-date end-date)]
+         (not (or (jt/before? day start)
+                  (jt/after? day end)))))
+
 
 (defn ex-cause-and-msg
   [throwable]
   (str "cause: " (medley/ex-cause throwable) "; " "message: " (medley/ex-message throwable)))
+
 
 (defn validate-throw
   [schema value]
@@ -69,45 +78,54 @@
                          {:schema schema
                           :message msg})))))
 
+
 (>defn trim-space
-  [s]
-  [:string => :string]
-  (string/replace s #"\s+" ""))
+       [s]
+       [:string => :string]
+       (string/replace s #"\s+" ""))
+
 
 (>defn meta-translate
-  [k]
-  [key-str-sym? => :keyword]
-  (hodur/dict-translate @config/meta-dict k))
+       [k]
+       [key-str-sym? => :keyword]
+       (hodur/dict-translate @config/meta-dict k))
+
 
 (>defn json-translate
-  [k]
-  [key-str-sym? => :keyword]
-  (hodur/dict-translate @config/json-dict k))
+       [k]
+       [key-str-sym? => :keyword]
+       (hodur/dict-translate @config/json-dict k))
+
 
 (>defn bug-unit-translate
-  [k]
-  [key-str-sym? => :string]
-  (hodur/dict-translate @config/bug-unit-dict k))
+       [k]
+       [key-str-sym? => :string]
+       (hodur/dict-translate @config/bug-unit-dict k))
+
 
 (>defn translate-map
-  [m dict]
-  [map? vector? => map?]
-  (medley/map-keys #(hodur/dict-translate dict %) m))
+       [m dict]
+       [map? vector? => map?]
+       (medley/map-keys #(hodur/dict-translate dict %) m))
+
 
 (>defn qualify-key
-  [ns k]
-  [[:or keyword? symbol? string?] [:or keyword? symbol? string?] => qualified-keyword?]
-  (keyword (name ns) (name k)))
+       [ns k]
+       [[:or keyword? symbol? string?] [:or keyword? symbol? string?] => qualified-keyword?]
+       (keyword (name ns) (name k)))
+
 
 (>defn qualify-map
-  [m namespace]
-  [map? [:or keyword? string? symbol?] => map?]
-  (medley/map-keys #(keyword (name namespace) (name %)) m))
+       [m namespace]
+       [map? [:or keyword? string? symbol?] => map?]
+       (medley/map-keys #(keyword (name namespace) (name %)) m))
+
 
 (>defn unqualify-map
-  [m]
-  [map? => map?]
-  (medley/map-keys #(keyword (name %)) m))
+       [m]
+       [map? => map?]
+       (medley/map-keys #(keyword (name %)) m))
+
 
 (defn qualify-malli
   "Makes map keys qualified."
@@ -123,6 +141,7 @@
          mapper (fn [[k :as e]] (if (accept k) (c/update e 0 qualify) e))]
      (mu/transform-entries ?schema #(map mapper %) options))))
 
+
 (defn unqualify-malli
   "Makes map keys qualified."
   ([?schema]
@@ -137,13 +156,15 @@
          mapper (fn [[k :as e]] (if (accept k) (c/update e 0 qualify) e))]
      (mu/transform-entries ?schema #(map mapper %) options))))
 
+
 (>defn file-time
-  [file]
-  [[:fn #(fs/file? %)] => [:fn #(jt/local-date-time? %)]]
-  (-> (.lastModified file)
-      jt/instant
-      jt/fixed-clock
-      jt/local-date-time))
+       [file]
+       [[:fn #(fs/file? %)] => [:fn #(jt/local-date-time? %)]]
+       (-> (.lastModified file)
+           jt/instant
+           jt/fixed-clock
+           jt/local-date-time))
+
 
 (defn optional-id-schema
   [schema]
@@ -155,11 +176,13 @@
                          mu/optional-keys)]
     (mu/merge schema id-optional)))
 
+
 (defn dissoc-schema
   [schema & s-keys]
   (reduce (fn [init k]
             (mu/dissoc init k))
           schema s-keys))
+
 
 (defn dissoc-qualified-schema
   [schema ns & s-keys]
@@ -168,10 +191,12 @@
               (mu/dissoc init k))
             schema q-keys)))
 
+
 (>defn str->int
-  [int-str]
-  [string? => int?]
-  (Long/parseLong int-str))
+       [int-str]
+       [string? => int?]
+       (Long/parseLong int-str))
+
 
 (defn partial-right
   "Takes a function f and fewer than the normal arguments to f, and
@@ -187,6 +212,7 @@
   ([f arg1 arg2 arg3 & more]
    (fn [& args] (apply f (concat args (concat [arg1 arg2 arg3] more))))))
 
+
 (defn json-file
   [file-path]
   (when (and (fs/exists? file-path)
@@ -195,6 +221,7 @@
     (let [j-file (fs/file file-path)]
       (when (< 0 (.length j-file))
         j-file))))
+
 
 (defn json-files
   ([max-time path]
