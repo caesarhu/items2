@@ -41,11 +41,10 @@
 (>defn spit-values-csv
   ([path values kv title?]
    [any? [:sequential map?] [:vector keyword?] boolean? => any?]
-   (tap> path)
-   (tap> kv)
    (let [csv (values->seq values kv title?)]
      (with-open [writer (bom/bom-writer "UTF-8" path)]
-       (csv/write-csv writer csv))))
+       (csv/write-csv writer csv)
+       path)))
   ([path values kv]
    [any? [:sequential map?] [:vector keyword?] => any?]
    (spit-values-csv path values kv true)))

@@ -19,13 +19,9 @@
             [java-time :as jt]
             [honeysql.core :as sql]
             [honeysql.helpers :as sqlh]
-            [items2.json :as j]
-            [items2.db.items :as items]
-            [items2.db.stats :as stats]
             [items2.db.items-csv :as csv]
-            [items2.db.mail-list :as mail]
-            [medley.core :as medley]
-            [items2.csv :as cc]))
+            [items2.db.mail :as mail]
+            [items2.db.items :as items]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))
@@ -69,5 +65,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def period {:start-date (jt/local-date 2020 12 20)
-             :end-date (jt/local-date 2020 12 20)})
+(def period {:start-date (jt/local-date 2020 12 21)
+             :end-date (jt/local-date 2020 12 21)})
+
+(def items-csv
+  ["csv/明細-保安大隊-2020-12-22-to-2020-12-22.csv"
+   "csv/明細-全局-2020-12-22-to-2020-12-22.csv"
+   "csv/統計-保安大隊-2020-12-22-to-2020-12-22.csv"
+   "csv/統計-全局-2020-12-22-to-2020-12-22.csv"])

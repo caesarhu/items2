@@ -16,6 +16,25 @@
             [exoscale.ex :as ex]
             [clojure.string :as string]))
 
+(defn yesterday
+  []
+  {:start-date (jt/minus (jt/local-date) (jt/days 1))
+   :end-date (jt/minus (jt/local-date) (jt/days 1))})
+
+(defn last-week
+  []
+  {:start-date (jt/minus (jt/local-date) (jt/days 7))
+   :end-date (jt/minus (jt/local-date) (jt/days 1))})
+
+(defn last-month
+  []
+  (let [[year lm] (jt/as (jt/minus (jt/local-date) (jt/months 1)) :year :month-of-year)
+        start-date (jt/local-date year lm 1)
+        end-date (-> (jt/plus start-date (jt/months 1))
+                     (jt/minus (jt/days 1)))]
+    {:start-date start-date
+     :end-date end-date}))
+
 (def key-str-sym?
   [:or keyword? string? symbol?])
 

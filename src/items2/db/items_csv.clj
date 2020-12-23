@@ -17,7 +17,7 @@
         unit-name (key mail-group)
         base-name (:name (val report))]
     (-> (string/join "-" [base-name unit-name (jt/format "YYYY-MM-dd" start-date)
-                          "to" (jt/format "YYYY-MM-dd" start-date)])
+                          "to" (jt/format "YYYY-MM-dd" end-date)])
         (str ".csv"))))
 
 (>defn csv-path
@@ -86,3 +86,4 @@
    (spit-reports-csv db period (:report @config/config)))
   ([period]
    (spit-reports-csv @db/sys-db period)))
+
