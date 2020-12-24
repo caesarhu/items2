@@ -28,9 +28,19 @@
            {:extra-deps {jonase/eastwood {:mvn/version "RELEASE"}}
             :main-opts  ["-m" "eastwood.lint"
                          "{:source-paths,[\"src\"],:test-paths,[\"test\"]}"]}
-           :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "2.0.161"}}
-                     :main-opts ["-X" "hf.depstar.uberjar" "items2.jar"
-                                 "-C" "-m" "items2.core"]}
+
+           :depstar
+           {:replace-deps ; tool usage is new in 2.x
+                     {seancorfield/depstar {:mvn/version "2.0.161"}}
+            :ns-default hf.depstar
+            :exec-args {}}
+
+           :uberjar {:replace-deps {seancorfield/depstar {:mvn/version "2.0.161"}}
+                     :exec-fn hf.depstar/uberjar
+                     :exec-args {:jar "items2.jar"
+                                 :aot true
+                                 :main-class items2.core}}
+
            :test {:extra-paths ["test"]
                   :extra-deps {fipp/fipp {:mvn/version "0.6.23"}
                                org.clojure/tools.namespace {:mvn/version "1.1.0"}
