@@ -7,6 +7,7 @@
     [fipp.edn :refer [pprint]]
     [hodur-translate.core :as hodur]
     [items2.config :as config]
+    [clojure.tools.gitlibs :as gl]
     [items2.migratus :as migratus]
     [java-time :as jt]
     [juxt.clip.repl :refer [start stop set-init! reset system]]

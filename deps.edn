@@ -1,4 +1,4 @@
-{:paths ["src" "dev/src" "resources" "dev/resources"]
+{:paths ["src" "resources"]
  :aliases {:dev {:extra-paths ["dev/src" "test" "dev/resources"]
                  :extra-deps {fipp/fipp {:mvn/version "0.6.23"}
                               org.clojure/tools.namespace {:mvn/version "1.1.0"}
@@ -54,7 +54,8 @@
         org.clojure/clojure {:mvn/version "1.10.2-rc1"}
         juxt/clip {:mvn/version "0.21.0"}
         aero/aero {:mvn/version "1.1.6"}
-        caesarhu/aave {:mvn/version "0.1.0"}
+        caesarhu/aave {:git/url "https://github.com/caesarhu/aave.git"
+                       :sha "7c594ea03bcbd3b9653f5b8c382990ed062c1338"}
         caesarhu/hodur-translate {:mvn/version "0.1.16"}
         seancorfield/next.jdbc {:mvn/version "1.1.613"}
         org.postgresql/postgresql {:mvn/version "42.2.18"}
