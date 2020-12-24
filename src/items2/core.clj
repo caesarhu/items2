@@ -7,4 +7,5 @@
   "每日寄送危安物品登錄APP mail"
   [& args]
   (println "開始寄送危安物品登錄APP mail !")
-  (daily-mail))
+  ;(daily-mail)
+  (println (str "args: " args)))

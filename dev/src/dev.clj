@@ -1,4 +1,5 @@
 (ns dev
+  (:refer-clojure :exclude [test])
   (:require
     [clojure.java.io :as io]
     [clojure.spec.alpha :as s]
@@ -42,7 +43,7 @@
   (hodur/spit-malli-schema path (meta-db) true))
 
 
-(defn dev-test
+(defn test
   []
   (k/run :unit))
 
