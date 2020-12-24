@@ -5,7 +5,6 @@
     [hikari-cp.core :as hikari]
     [honeysql-postgres.helpers :as psqlh]
     [honeysql.core :as sql]
-    [honeysql.helpers :as sqlh]
     [items2.config :as config]
     [next.jdbc :as jdbc]
     [next.jdbc.date-time :refer [read-as-local]]

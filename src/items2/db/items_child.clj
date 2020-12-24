@@ -1,19 +1,11 @@
 (ns items2.db.items-child
   (:require
     [aave.core :refer [>defn >defn-]]
-    [clojure.spec.alpha :as s]
-    [exoscale.ex :as ex]
     [honeysql.core :as sql]
     [honeysql.helpers :as sqlh]
     [items2.db.core :as db]
-    [items2.items-malli :as im]
-    [items2.json :as j]
     [items2.utils :as utils]
-    [malli.core :as m]
-    [malli.error :as me]
-    [malli.transform :as mt]
-    [medley.core :as medley]
-    [taoensso.timbre :as timbre]))
+    [medley.core :as medley]))
 
 
 (>defn delete-table-by-items-id!

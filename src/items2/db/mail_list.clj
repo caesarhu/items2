@@ -1,13 +1,8 @@
 (ns items2.db.mail-list
   (:require
-    [aave.core :refer [>defn >defn-]]
-    [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]
-    [honeysql-postgres.helpers :as psqlh]
-    [honeysql.core :as sql]
     [honeysql.helpers :as sqlh]
     [items2.db.core :as db]
-    [items2.utils :as utils]
-    [java-time :as jt]))
+    [items2.utils :as utils]))
 
 
 (defn get-mail-list

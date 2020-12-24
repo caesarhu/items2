@@ -1,16 +1,24 @@
 (ns items2.json-test
   (:require
+    [clojure.spec.alpha :as s]
     [clojure.test :refer :all]
-    [items2.helpers :refer :all]
+    [expound.alpha :as expound]
     [items2.json :refer :all]
     [java-time :as jt]
-    [malli.core :as m]))
+    [malli.core :as m]
+    [orchestra.spec.test :as stest]))
 
 
-(comment
-  (use-fixtures
-    :once
-    instrument-specs))
+(defn instrument-specs
+  [f]
+  (set! s/*explain-out* expound/printer)
+  (stest/instrument)
+  (f))
+
+
+(use-fixtures
+  :once
+  instrument-specs)
 
 
 (def json-file "dev/resources/data/2020-11-24-11-18-20.898-DataStore.json")

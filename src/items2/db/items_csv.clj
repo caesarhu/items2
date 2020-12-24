@@ -7,8 +7,6 @@
     [items2.csv :as csv]
     [items2.db.core :as db]
     [items2.db.mail-list :as mail]
-    [items2.db.stats :as stats]
-    [items2.utils :as utils]
     [java-time :as jt]))
 
 

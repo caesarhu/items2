@@ -3,8 +3,6 @@
     [aero.core :as aero]
     [clojure.java.io :as io]
     [hodur-translate.core :as hodur]
-    [juxt.clip.repl :refer [system]]
-    [migratus.core :as migratus]
     [redelay.core :as redelay]
     [taoensso.timbre :as timbre]
     [taoensso.timbre.appenders.3rd-party.rolling :as rolling]

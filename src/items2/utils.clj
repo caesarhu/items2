@@ -3,7 +3,6 @@
     [aave.core :refer [>defn >defn-]]
     [clojure.core :as c]
     [clojure.string :as string]
-    [com.rpl.specter :as sp]
     [datoteka.core :as fs]
     [exoscale.ex :as ex]
     [hodur-translate.core :as hodur]
@@ -14,8 +13,7 @@
     [malli.core :as m]
     [malli.error :as me]
     [malli.util :as mu]
-    [medley.core :as medley]
-    [taoensso.timbre :as timbre]))
+    [medley.core :as medley]))
 
 
 (defn yesterday
