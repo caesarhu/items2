@@ -1,8 +1,10 @@
 (ns items2.core
-  (:gen-class))
+  (:gen-class)
+  (:require [items2.config :as config]
+            [items2.db.mail :refer [daily-mail]]))
 
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "每日寄送危安物品登錄APP mail"
   [& args]
   (println "Hello, World!"))

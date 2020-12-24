@@ -18,7 +18,7 @@
 
 (def config
   (redelay/state
-    :start (read-edn-config)))
+    :start (read-edn-config :default)))
 
 ;;; timbre
 

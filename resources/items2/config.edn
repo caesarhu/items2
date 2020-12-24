@@ -1,5 +1,6 @@
 {:jdbc-url "jdbc:postgresql://localhost:35432/items2?user=shun&password=smilehu"
- :connection-uri #profile {:default #env JDBC_DATABASE_URL
+ :connection-uri #profile {:default #or [#env JDBC_DATABASE_URL
+                                         #ref [:jdbc-url]]
                            :dev #or [#env JDBC_DATABASE_URL
                                      #ref [:jdbc-url]]}
  :schema-path "schema.edn"
