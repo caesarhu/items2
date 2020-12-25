@@ -119,34 +119,33 @@
 (ex/derive ::json-parser ::ex/incorrect)
 
 
-(>defn json-parser
-       [file-name]
-       [[:or string? [:fn #(fs/file? %)]] => map?]
-       (let [file (if (fs/file? file-name)
-                    file-name
-                    (fs/file file-name))
-             json (m/decode item-json (json/read-value file) json-transformer)
-             {:keys [日期 時間 勤務單位]} json
-             datetime (jt/local-date-time (string/join "T" [日期 時間]))
-             ftime (utils/file-time file)
-             raw-json (->> (dissoc json :日期 :時間 :勤務單位)
-                           (merge 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
-                           (medley/map-keys #(utils/qualify-key "危安物品檔" %))
-                           (medley/map-keys utils/meta-translate)
-                           (medley/map-keys utils/json-translate))
-             tables (:items-child @config/config)
-             result (merge {:item (apply dissoc raw-json tables)} (select-keys raw-json tables))]
-         (if (m/validate parsed-item-schema result)
-           result
-           (let [explain (me/humanize (m/explain parsed-item-schema result))]
-             (timbre/log :error
-                         "json file incorrect! "
-                         {:from ::json-parser
-                          :file file-name
-                          :explain explain
-                          :item result})
-             (throw (ex/ex-info (str "json file incorrect! " explain)
-                                ::json-parser
-                                {:from ::json-parser
-                                 :file file-name}))))))
+(defn json-parser
+  [file-name]
+  (let [file (if (fs/file? file-name)
+               file-name
+               (fs/file file-name))
+        json (m/decode item-json (json/read-value file) json-transformer)
+        {:keys [日期 時間 勤務單位]} json
+        datetime (jt/local-date-time (string/join "T" [日期 時間]))
+        ftime (utils/file-time file)
+        raw-json (->> (dissoc json :日期 :時間 :勤務單位)
+                      (merge 勤務單位 {:查獲時間 datetime :原始檔案 (.getName file) :原始檔案時間 ftime})
+                      (medley/map-keys #(utils/qualify-key "危安物品檔" %))
+                      (medley/map-keys utils/meta-translate)
+                      (medley/map-keys utils/json-translate))
+        tables (:items-child @config/config)
+        result (merge {:item (apply dissoc raw-json tables)} (select-keys raw-json tables))]
+    (if (m/validate parsed-item-schema result)
+      result
+      (let [explain (me/humanize (m/explain parsed-item-schema result))]
+        (timbre/log :error
+                    "json file incorrect! "
+                    {:from ::json-parser
+                     :file file-name
+                     :explain explain
+                     :item result})
+        (throw (ex/ex-info (str "json file incorrect! " explain)
+                           ::json-parser
+                           {:from ::json-parser
+                            :file file-name}))))))
 

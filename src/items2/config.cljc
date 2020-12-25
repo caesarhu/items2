@@ -2,6 +2,7 @@
   (:require
     [aero.core :as aero]
     [clojure.java.io :as io]
+    [fipp.edn :refer [pprint]]
     [hodur-translate.core :as hodur]
     [redelay.core :as redelay]
     [taoensso.timbre :as timbre]
@@ -11,14 +12,15 @@
 
 (defn read-edn-config
   ([profile]
-   (aero/read-config (io/resource "items2/config.edn") {:profile profile}))
+   (let [config (aero/read-config (io/resource "items2/config.edn") {:profile profile})]
+     config))
   ([]
    (read-edn-config :dev)))
 
 
 (def config
   (redelay/state
-    :start (read-edn-config)))
+    :start (read-edn-config :default)))
 
 ;;; timbre
 

@@ -1,9 +1,7 @@
 (ns user
   (:require
     [aave.config :as aave-config]
-    [aave.core :refer [>defn >defn-] :as aave]
-    [nrepl.server :refer [start-server stop-server]]))
-
+    [aave.core :refer [>defn >defn-] :as aave]))
 
 ;;; set aave inpure
 
@@ -23,7 +21,4 @@
   (in-ns 'dev)
   :loaded)
 
-;;; nrepl server
-
-;(defonce nrepl-server (start-server :port 7777))
 

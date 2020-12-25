@@ -1,6 +1,8 @@
 (ns dev
   (:refer-clojure :exclude [test])
   (:require
+    [aave.config :as aave-config]
+    [aave.core :refer [>defn >defn-] :as aave]
     [clojure.java.io :as io]
     [clojure.spec.alpha :as s]
     [expound.alpha :as expound]
@@ -13,6 +15,16 @@
     [juxt.clip.repl :refer [start stop set-init! reset system]]
     [kaocha.repl :as k]
     [orchestra.spec.test :as stest]))
+
+;;; set aave inpure
+
+(defn set-aave-opts!
+  [opts]
+  (aave/set-config! (merge aave-config/default opts)))
+
+
+(set-aave-opts! {:aave.core/enforce-purity false
+                 :aave.core/on-purity-fail (fn [])})
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))
