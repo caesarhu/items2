@@ -43,6 +43,8 @@
 
            :send-mail {:exec-fn items2.core/send-mail}
 
+           :test-read-file {:exec-fn items2.core/test-read-file}
+
            :test {:extra-paths ["test"]
                   :extra-deps {fipp/fipp {:mvn/version "0.6.23"}
                                org.clojure/tools.namespace {:mvn/version "1.1.0"}
