@@ -121,9 +121,7 @@
 
 (defn json-parser
   [file-name]
-  (let [file (if (fs/file? file-name)
-               file-name
-               (fs/file file-name))
+  (let [file (slurp file-name) 
         json (m/decode item-json (json/read-value file) json-transformer)
         {:keys [日期 時間 勤務單位]} json
         datetime (jt/local-date-time (string/join "T" [日期 時間]))
