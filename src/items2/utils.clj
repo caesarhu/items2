@@ -8,7 +8,6 @@
     [hodur-translate.core :as hodur]
     [hodur-translate.spec.malli-schemas :refer [local-date local-date-time]]
     [items2.config :as config]
-    [items2.config :as config]
     [java-time :as jt]
     [malli.core :as m]
     [malli.error :as me]

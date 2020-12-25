@@ -44,8 +44,10 @@
         org.clojure/clojure {:mvn/version "1.10.2-rc1"}
         juxt/clip {:mvn/version "0.21.0"}
         aero/aero {:mvn/version "1.1.6"}
-        caesarhu/aave {:mvn/version "0.1.0"}
-        caesarhu/hodur-translate {:mvn/version "0.1.16"}
+        caesarhu/aave {:git/url "https://github.com/caesarhu/aave.git"
+                       :sha "7c594ea03bcbd3b9653f5b8c382990ed062c1338"}
+        caesarhu/hodur-translate {:git/url "https://github.com/caesarhu/hodur-translate"
+                                  :sha "1c60441555c40969d97648f7e9dbeff7604c0eee"}
         seancorfield/next.jdbc {:mvn/version "1.1.613"}
         org.postgresql/postgresql {:mvn/version "42.2.18"}
         hikari-cp/hikari-cp {:mvn/version "2.13.0"}

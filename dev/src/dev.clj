@@ -13,7 +13,8 @@
     [orchestra.spec.test :as stest]
     [items2.db.items :as items]
     [items2.json :as json]
-    [datoteka.core :as fs]))
+    [datoteka.core :as fs]
+    [clojure.tools.gitlibs :as gl]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))

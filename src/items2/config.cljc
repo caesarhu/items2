@@ -1,8 +1,10 @@
 (ns items2.config
   (:require
     [aero.core :as aero]
+    [exoscale.ex :as ex]
     [clojure.java.io :as io]
     [hodur-translate.core :as hodur]
+    [medley.core :as medley]
     [redelay.core :as redelay]
     [taoensso.timbre :as timbre]
     [taoensso.timbre.appenders.3rd-party.rolling :as rolling]
@@ -48,9 +50,18 @@
 
 (def meta-db
   (redelay/state
-    :start (-> (:schema-path (read-edn-config))
-               hodur/read-schema
-               hodur/init-db)))
+    :start
+    (ex/try+ (-> (:schema-path (read-edn-config))
+                 hodur/read-schema
+                 hodur/init-db)
+             (catch Throwable e
+               (timbre/log :error
+                           (str "meta-db read error! " "cause: " (medley/ex-cause e) "; " "message: " (medley/ex-message e))
+                           {:from ::meta-db})
+               (throw (ex/ex-info "meta-db read error!"
+                                  ::ex/not-found
+                                  {:from ::meta-db}
+                                  e))))))
 
 
 (def meta-dict
