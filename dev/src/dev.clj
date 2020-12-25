@@ -10,7 +10,10 @@
     [java-time :as jt]
     [juxt.clip.repl :refer [start stop set-init! reset system]]
     [kaocha.repl :as k]
-    [orchestra.spec.test :as stest]))
+    [orchestra.spec.test :as stest]
+    [items2.db.items :as items]
+    [items2.json :as json]
+    [datoteka.core :as fs]))
 
 ;(set-init! (fn [] (config/read-edn-config :dev)))
 (set-init! (fn [] @config/config))

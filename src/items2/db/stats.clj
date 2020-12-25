@@ -38,73 +38,67 @@
       (sqlh/group :items-id)))
 
 
-(>defn items-period-detail
-       ([db period unit subunit]
-        [db/malli-db malli-period [:or string? nil?] [:or string? nil?] => any?]
-        (let [start-date (:start-date period)
-              end-date (jt/plus (:end-date period) (jt/days 1))
-              sql-map-base (-> (sql/build :select :*
-                                          :from :items)
-                               (sqlh/merge-select :ilist/項目清單 :people/件數人數 :alist/所有項目數量)
-                               (sqlh/left-join [item-list-subquery :ilist] [:= :items/id :ilist/items-id]
-                                               [item-people-subquery :people] [:= :items/id :people/items-id]
-                                               [all-list-subquery :alist] [:= :items/id :alist/items-id])
-                               (sqlh/where [:and
-                                            [:>= :items/check-time start-date]
-                                            [:< :items/check-time end-date]])
-                               (sqlh/order-by :items/unit :items/subunit :items/police :items/check-time))
-              sql-map (cond-> sql-map-base
-                        unit (sqlh/merge-where [:= :items/unit unit])
-                        subunit (sqlh/merge-where [:= :items/subunit subunit]))]
-          (db/honey! db sql-map {})))
-       ([db period unit]
-        [db/malli-db malli-period [:or string? nil?] => any?]
-        (items-period-detail db period unit nil))
-       ([db period]
-        [db/malli-db malli-period => any?]
-        (items-period-detail db period nil nil))
-       ([period]
-        [malli-period => any?]
-        (items-period-detail @db/sys-db period nil nil)))
-
-
-(>defn items-period-stats
-       ([db period]
-        [db/malli-db malli-period => any?]
-        (let [start-date (:start-date period)
-              end-date (jt/plus (:end-date period) (jt/days 1))
-              sql-map (-> (sqlh/select :items/unit :items/subunit
-                                       :items/police
-                                       :item-list/kind :item-list/subkind
-                                       [:%count.item-list.subkind :合計]
-                                       [start-date :開始日期]
-                                       [end-date :結束日期])
-                          (sqlh/from :items :item-list)
+(defn items-period-detail
+  ([db period unit subunit]
+   (let [start-date (:start-date period)
+         end-date (jt/plus (:end-date period) (jt/days 1))
+         sql-map-base (-> (sql/build :select :*
+                                     :from :items)
+                          (sqlh/merge-select :ilist/項目清單 :people/件數人數 :alist/所有項目數量)
+                          (sqlh/left-join [item-list-subquery :ilist] [:= :items/id :ilist/items-id]
+                                          [item-people-subquery :people] [:= :items/id :people/items-id]
+                                          [all-list-subquery :alist] [:= :items/id :alist/items-id])
                           (sqlh/where [:and
-                                       [:= :item-list/items-id :items/id]
                                        [:>= :items/check-time start-date]
                                        [:< :items/check-time end-date]])
-                          (sqlh/group (sql/call "GROUPING SETS"
-                                                '(:unit :subunit :police :kind :subkind)
-                                                '(:unit :subunit :police :kind)
-                                                '(:unit :subunit :kind :subkind)
-                                                '(:unit :subunit :kind)
-                                                '(:unit :kind :subkind)
-                                                '(:unit :kind)
-                                                '(:kind :subkind)
-                                                '(:kind)))
-                          (sqlh/order-by [:items/unit :nulls-first]
-                                         [:items/subunit :nulls-first]
-                                         [:items/police :nulls-first]
-                                         [:item-list/kind :nulls-first]
-                                         [:item-list/subkind :nulls-first]))]
-          (->> (db/honey! db sql-map {})
-               not-empty
-               (map (fn [m]
-                      (if (nil? (:items/unit m))
-                        (assoc m :items/unit "全局")
-                        m))))))
-       ([period]
-        [malli-period => any?]
-        (items-period-stats @db/sys-db period)))
+                          (sqlh/order-by :items/unit :items/subunit :items/police :items/check-time))
+         sql-map (cond-> sql-map-base
+                   unit (sqlh/merge-where [:= :items/unit unit])
+                   subunit (sqlh/merge-where [:= :items/subunit subunit]))]
+     (db/honey! db sql-map {})))
+  ([db period unit]
+   (items-period-detail db period unit nil))
+  ([db period]
+   (items-period-detail db period nil nil))
+  ([period]
+   (items-period-detail @db/sys-db period nil nil)))
+
+
+(defn items-period-stats
+  ([db period]
+   (let [start-date (:start-date period)
+         end-date (jt/plus (:end-date period) (jt/days 1))
+         sql-map (-> (sqlh/select :items/unit :items/subunit
+                                  :items/police
+                                  :item-list/kind :item-list/subkind
+                                  [:%count.item-list.subkind :合計]
+                                  [start-date :開始日期]
+                                  [end-date :結束日期])
+                     (sqlh/from :items :item-list)
+                     (sqlh/where [:and
+                                  [:= :item-list/items-id :items/id]
+                                  [:>= :items/check-time start-date]
+                                  [:< :items/check-time end-date]])
+                     (sqlh/group (sql/call "GROUPING SETS"
+                                           '(:unit :subunit :police :kind :subkind)
+                                           '(:unit :subunit :police :kind)
+                                           '(:unit :subunit :kind :subkind)
+                                           '(:unit :subunit :kind)
+                                           '(:unit :kind :subkind)
+                                           '(:unit :kind)
+                                           '(:kind :subkind)
+                                           '(:kind)))
+                     (sqlh/order-by [:items/unit :nulls-first]
+                                    [:items/subunit :nulls-first]
+                                    [:items/police :nulls-first]
+                                    [:item-list/kind :nulls-first]
+                                    [:item-list/subkind :nulls-first]))]
+     (->> (db/honey! db sql-map {})
+          not-empty
+          (map (fn [m]
+                 (if (nil? (:items/unit m))
+                   (assoc m :items/unit "全局")
+                   m))))))
+  ([period]
+   (items-period-stats @db/sys-db period)))
 

@@ -60,36 +60,29 @@ SQL entities to unqualified kebab-case Clojure identifiers (`:builder-fn`)."
                  (hikari/close-datasource this)))
 
 
-(>defn honey-format
-       [map-or-seq-or-vector]
-       [coll? => any?]
-       (if (map? map-or-seq-or-vector)
-         (sql/format map-or-seq-or-vector :namespace-as-table? true)
-         (apply sql/format map-or-seq-or-vector)))
+(defn honey-format
+  [map-or-seq-or-vector]
+  (if (map? map-or-seq-or-vector)
+    (sql/format map-or-seq-or-vector :namespace-as-table? true)
+    (apply sql/format map-or-seq-or-vector)))
 
 
-(>defn honey!
-       ([db sql-map opts]
-        [malli-db coll? malli-db-opts => any?]
-        (jdbc/execute! db (honey-format sql-map) (merge auto-opts opts)))
-       ([sql-map opts]
-        [coll? malli-db-opts => any?]
-        (honey! @sys-db sql-map opts))
-       ([sql-map]
-        [coll? => any?]
-        (honey! @sys-db sql-map {})))
+(defn honey!
+  ([db sql-map opts]
+   (jdbc/execute! db (honey-format sql-map) (merge auto-opts opts)))
+  ([sql-map opts]
+   (honey! @sys-db sql-map opts))
+  ([sql-map]
+   (honey! @sys-db sql-map {})))
 
 
-(>defn honey-one!
-       ([db sql-map opts]
-        [malli-db coll? malli-db-opts => any?]
-        (jdbc/execute-one! db (honey-format sql-map) (merge auto-opts opts)))
-       ([sql-map opts]
-        [coll? malli-db-opts => any?]
-        (honey-one! @sys-db sql-map opts))
-       ([sql-map]
-        [coll? => any?]
-        (honey-one! @sys-db sql-map {})))
+(defn honey-one!
+  ([db sql-map opts]
+   (jdbc/execute-one! db (honey-format sql-map) (merge auto-opts opts)))
+  ([sql-map opts]
+   (honey-one! @sys-db sql-map opts))
+  ([sql-map]
+   (honey-one! @sys-db sql-map {})))
 
 
 (defn upsert-one

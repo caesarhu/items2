@@ -83,34 +83,29 @@
        (string/replace s #"\s+" ""))
 
 
-(>defn meta-translate
-       [k]
-       [key-str-sym? => :keyword]
-       (hodur/dict-translate @config/meta-dict k))
+(defn meta-translate
+  [k]
+  (hodur/dict-translate @config/meta-dict k))
 
 
-(>defn json-translate
-       [k]
-       [key-str-sym? => :keyword]
-       (hodur/dict-translate @config/json-dict k))
+(defn json-translate
+  [k]
+  (hodur/dict-translate @config/json-dict k))
 
 
-(>defn bug-unit-translate
-       [k]
-       [key-str-sym? => :string]
-       (hodur/dict-translate @config/bug-unit-dict k))
+(defn bug-unit-translate
+  [k]
+  (hodur/dict-translate @config/bug-unit-dict k))
 
 
-(>defn translate-map
-       [m dict]
-       [map? vector? => map?]
-       (medley/map-keys #(hodur/dict-translate dict %) m))
+(defn translate-map
+  [m dict]
+  (medley/map-keys #(hodur/dict-translate dict %) m))
 
 
-(>defn qualify-key
-       [ns k]
-       [[:or keyword? symbol? string?] [:or keyword? symbol? string?] => qualified-keyword?]
-       (keyword (name ns) (name k)))
+(defn qualify-key
+  [ns k]
+  (keyword (name ns) (name k)))
 
 
 (>defn qualify-map
@@ -155,13 +150,12 @@
      (mu/transform-entries ?schema #(map mapper %) options))))
 
 
-(>defn file-time
-       [file]
-       [[:fn #(fs/file? %)] => [:fn #(jt/local-date-time? %)]]
-       (-> (.lastModified file)
-           jt/instant
-           jt/fixed-clock
-           jt/local-date-time))
+(defn file-time
+  [file]
+  (-> (.lastModified file)
+      jt/instant
+      jt/fixed-clock
+      jt/local-date-time))
 
 
 (defn optional-id-schema
