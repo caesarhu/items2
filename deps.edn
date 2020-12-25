@@ -58,7 +58,8 @@
         aero/aero {:mvn/version "1.1.6"}
         caesarhu/aave {:git/url "https://github.com/caesarhu/aave.git"
                        :sha "7c594ea03bcbd3b9653f5b8c382990ed062c1338"}
-        caesarhu/hodur-translate {:mvn/version "0.1.16"}
+        caesarhu/hodur-translate {:git/url "https://github.com/caesarhu/hodur-translate.git"
+                                  :sha "ad7836475f69291ec9e5ea3d03e4c21f51c6a55b"}
         seancorfield/next.jdbc {:mvn/version "1.1.613"}
         org.postgresql/postgresql {:mvn/version "42.2.18"}
         hikari-cp/hikari-cp {:mvn/version "2.13.0"}
