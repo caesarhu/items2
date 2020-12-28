@@ -12,8 +12,6 @@
   :once
   instrument-specs)
 
-(clear-db)
-
 (def json-full-items
   (qualify-map {:file-time (file-time json-file),
                 :ip "0.0.0.0",
@@ -658,6 +656,7 @@
     (db/honey! db sql-map {})))
 
 (test/deftest import-item-test
+  (println (clear-db))
   (test/testing "test import-item-file!"
     (test/is (= json-full-items (items/import-item-file! json-file)))
     (test/is (= all-list-full (get-child @db/sys-db 1 :all-list)))
