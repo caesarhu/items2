@@ -46,7 +46,7 @@
   (hodur/spit-malli-schema path (meta-db) true))
 
 
-(defn dev-test
+(defn do-test
   []
   (k/run :unit))
 

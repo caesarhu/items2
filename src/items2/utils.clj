@@ -107,10 +107,9 @@
   (keyword (name ns) (name k)))
 
 
-(>defn qualify-map
-       [m namespace]
-       [map? [:or keyword? string? symbol?] => map?]
-       (medley/map-keys #(keyword (name namespace) (name %)) m))
+(defn qualify-map
+  [m namespace]
+  (medley/map-keys #(keyword (name namespace) (name %)) m))
 
 
 (>defn unqualify-map
@@ -151,7 +150,7 @@
 
 (defn file-time
   [file]
-  (-> (.lastModified file)
+  (-> (.lastModified (fs/file file))
       jt/instant
       jt/fixed-clock
       jt/local-date-time))

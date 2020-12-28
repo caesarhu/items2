@@ -1,31 +1,19 @@
 (ns items2.json-test
   (:require
-    [clojure.spec.alpha :as s]
-    [clojure.test :refer :all]
-    [expound.alpha :as expound]
-    [items2.json :refer :all]
+    [clojure.test :as test]
+    [items2.json :as json]
     [java-time :as jt]
-    [malli.core :as m]
-    [orchestra.spec.test :as stest]))
+    [items2.utils :refer [file-time]]
+    [items2.test-utils :refer [instrument-specs json-file]]))
 
 
-(defn instrument-specs
-  [f]
-  (set! s/*explain-out* expound/printer)
-  (stest/instrument)
-  (f))
-
-
-(use-fixtures
+(test/use-fixtures
   :once
   instrument-specs)
 
 
-(def json-file "dev/resources/data/full.json")
-
-
 (def json-test-data
-  {:item {:items/file-time (jt/local-date-time "2020-11-24T11:27:29"),
+  {:item {:items/file-time (file-time json-file),
           :items/ip "0.0.0.0",
           :items/passenger-sign "2020-11-24-11-27-18.986-passengerSign.jpg",
           :items/unit "刑警大隊",
@@ -325,6 +313,6 @@
                   :item-people/people 8}]})
 
 
-(deftest json-parser-test
-  (testing "test items2.json.json-parser"
-    (is (= json-test-data (json-parser json-file)))))
+(test/deftest json-parser-test
+  (test/testing "test items2.json.json-parser"
+    (test/is (= json-test-data (json/json-parser json-file)))))

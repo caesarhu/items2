@@ -11,11 +11,14 @@
     [taoensso.timbre.appenders.3rd-party.rotor :as rotor]))
 
 
+(def config-edn "items2/config.edn")
+
 (defn read-edn-config
   ([profile]
-   (aero/read-config (io/resource "items2/config.edn") {:profile profile}))
+   (aero/read-config (io/resource config-edn) {:profile profile}))
   ([]
-   (read-edn-config :dev)))
+   (let [system-profile (:system-profile (aero/read-config (io/resource "items2/config.edn")))]
+     (aero/read-config (io/resource config-edn) {:profile system-profile}))))
 
 
 (def config
@@ -71,12 +74,12 @@
 
 (def json-dict
   (redelay/state
-    :start (vector (:json-transform @config) {})))
+    :start (:json-transform @config)))
 
 
 (def bug-unit-dict
   (redelay/state
-    :start [(:bug-unit @config) {}]))
+    :start (:bug-unit @config)))
 
 
 (def json-file-path

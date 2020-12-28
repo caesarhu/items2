@@ -1,7 +1,15 @@
-{:jdbc-url "jdbc:postgresql://localhost:35432/items2?user=shun&password=smilehu"
- :connection-uri #profile {:default #env JDBC_DATABASE_URL
+{:system-profile :dev
+ :jdbc-url
+ #profile {:default "jdbc:postgresql://localhost:35432/items2?user=shun&password=smilehu"
+           :dev "jdbc:postgresql://localhost:35432/items2?user=shun&password=smilehu"
+           :test "jdbc:postgresql://localhost:45432/items2_test?user=shun&password=smilehu"}
+
+ :connection-uri #profile {:default #or [#env JDBC_DATABASE_URL
+                                         #ref [:jdbc-url]]
                            :dev #or [#env JDBC_DATABASE_URL
-                                     #ref [:jdbc-url]]}
+                                     #ref [:jdbc-url]]
+                           :test #or [#env JDBC_DATABASE_URL
+                                      #ref [:jdbc-url]]}
  :schema-path "schema.edn"
  :migration-dir "migrations"
 
@@ -19,6 +27,7 @@
 
  :json-file-path
  #profile {:dev "~/sftp/upload/"
+           :test "~/sftp/upload/"
            :default "/home/item/upload/"}
 
  :csv-path "./csv/"
@@ -40,6 +49,9 @@
  #profile {:dev {:path "logs/dev.log"
                  :max-size 60
                  :pattern :daily}
+           :test {:path "logs/test.log"
+                  :max-size 60
+                  :pattern :daily}
            :default {:path "logs/items2.log"
                      :max-size 60
                      :pattern :daily}}
