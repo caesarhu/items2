@@ -50,3 +50,12 @@
         [coll? => any?]
         (insert-items-child! @db/sys-db child)))
 
+(defn get-items-child
+  ([db items-id table]
+   (let [sql-map (-> (sqlh/select :*)
+                     (sqlh/from table)
+                     (sqlh/where [:= :items-id items-id]))]
+     (db/honey! db sql-map {})))
+  ([items-id table]
+   (get-items-child @db/sys-db items-id table)))
+

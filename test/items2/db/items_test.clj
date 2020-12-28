@@ -1,9 +1,8 @@
 (ns items2.db.items-test
   (:require [clojure.test :as test]
             [items2.db.items :as items]
+            [items2.db.items-child :as child]
             [java-time :as jt]
-            [honeysql.core :as sql]
-            [honeysql.helpers :as sqlh]
             [items2.db.core :as db]
             [items2.utils :refer [file-time qualify-map]]
             [items2.test-utils :refer [instrument-specs json-file clear-db]]))
@@ -648,17 +647,10 @@
     :item-people/people 8,
     :item-people/piece 18}])
 
-(defn get-child
-  [db items-id table]
-  (let [sql-map (-> (sqlh/select :*)
-                    (sqlh/from table)
-                    (sqlh/where [:= :items-id items-id]))]
-    (db/honey! db sql-map {})))
-
 (test/deftest import-item-test
   (println (clear-db))
   (test/testing "test import-item-file!"
     (test/is (= json-full-items (items/import-item-file! json-file)))
-    (test/is (= all-list-full (get-child @db/sys-db 1 :all-list)))
-    (test/is (= item-list-full (get-child @db/sys-db 1 :item-list)))
-    (test/is (= item-people-full (get-child @db/sys-db 1 :item-people)))))
+    (test/is (= all-list-full (child/get-items-child @db/sys-db 1 :all-list)))
+    (test/is (= item-list-full (child/get-items-child @db/sys-db 1 :item-list)))
+    (test/is (= item-people-full (child/get-items-child @db/sys-db 1 :item-people)))))
