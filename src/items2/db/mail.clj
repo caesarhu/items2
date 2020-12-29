@@ -63,8 +63,7 @@
          subject-fn (fn [s]
                       (-> (re-find #".*/(.*)(\.csv)" s)
                           second
-                          ;(string/replace #"[明細|統計]" "查獲危險(安)物品登錄資料")
-                          (string/replace #"(明細|統計)" "測試郵件")))
+                          (string/replace #"(明細|統計)" "查獲危險(安)物品登錄資料")))
          mail-ready (map #(hash-map :to %1 :files %2 :subject (subject-fn (first %2))) mail-list csv-files)]
      (doseq [mail-data mail-ready]
        (apply send-items-mail ((juxt :to :subject :files) mail-data))
