@@ -1,4 +1,4 @@
-{:system-profile :test
+{:system-profile :dev
  :jdbc-url
  #profile {:default "jdbc:postgresql://localhost:35432/items2?user=shun&password=smilehu"
            :dev "jdbc:postgresql://localhost:35432/items2?user=shun&password=smilehu"
