@@ -7,8 +7,8 @@
     [java-time :as jt]))
 
 
-(def time-format "YYYY/MM/dd HH:mm:ss")
-(def date-format "YYYY/MM/dd")
+(def time-format :iso-local-date-time)
+(def date-format :iso-local-date)
 
 
 (defn date-time-transform

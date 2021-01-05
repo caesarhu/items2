@@ -16,8 +16,8 @@
   (let [{:keys [start-date end-date]} period
         unit-name (key mail-group)
         base-name (:name (val report))]
-    (-> (string/join "-" [base-name unit-name (jt/format "YYYY-MM-dd" start-date)
-                          "to" (jt/format "YYYY-MM-dd" end-date)])
+    (-> (string/join "-" [base-name unit-name (jt/format :iso-local-date start-date)
+                          "to" (jt/format :iso-local-date end-date)])
         (str ".csv"))))
 
 
