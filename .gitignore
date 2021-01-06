@@ -16,7 +16,5 @@ pom.xml.asc
 /logs
 /.cpcache
 /.rebl
-/.idea
 /csv
-/.cpcache
 /.socket-repl-port
